@@ -6,8 +6,9 @@ const UserStorySchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ["todo", "in-review", "sprint-ready"], default: "todo" },
-    priority: { type: String, enum: ["low", "medium", "high"], default: "medium" },
-    projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
+    businessValue: { type: Number, required: true, min: 1, max: 100 },
+    storyPoint: { type: Number, required: true, enum: [1, 2, 3, 5, 8, 13, 21, 34, 55] },
+    comments: {type: [String], default: []},
   },
   { timestamps: true }
 );
