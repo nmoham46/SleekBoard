@@ -13,6 +13,7 @@ const UserStorySchema = new Schema(
   { timestamps: true }
 );
 
-UserStorySchema.index({ projectId: 1, createdAt: -1 });
+//Sorting by most recent
+UserStorySchema.index({ createdAt: -1 });
 
 export default model("UserStory", UserStorySchema);
