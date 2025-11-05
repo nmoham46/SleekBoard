@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Input,
-  MenuItem,
   Textarea,
   Select,
   Option,
@@ -25,13 +24,28 @@ export default function UserStoryForm() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (field) => (event) => {
-    const value = event.target.value;
+    const value = event?.target?.value || event;
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
     // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: '',
+      }));
+    }
+  };
+
+  const handleSelectChange = (field) => (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear error when user selects
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -106,7 +120,7 @@ export default function UserStoryForm() {
   return (
     <div className="content-center p-8">
       <div className="mb-6">
-        <Typography component="h1" variant="h2" gutterBottom>
+        <Typography component="h1" variant="h2">
           Create User Story
         </Typography>
       </div>
@@ -134,7 +148,6 @@ export default function UserStoryForm() {
               label="Description"
               variant="outlined"
               required
-              multiline
               rows={4}
               value={formData.description}
               onChange={handleChange('description')}
@@ -142,21 +155,18 @@ export default function UserStoryForm() {
           </div>
 
           <div>
-          <Typography variant="h6" color="blue-gray" >
-            Status
-          </Typography>
+            <Typography variant="h6" color="blue-gray">
+              Status
+            </Typography>
             <Select
               value={formData.status}
-              onChange={handleChange('status')}
+              onChange={handleSelectChange('status')}
               label="Status"
-              inputProps={{
-                tabIndex: -1,
-              }}
             >
               {statusOptions.map((option) => (
-                <MenuItem key={option} value={option}>
+                <Option key={option} value={option}>
                   {option}
-                </MenuItem>
+                </Option>
               ))}
             </Select>
           </div>
@@ -166,32 +176,26 @@ export default function UserStoryForm() {
           </Typography>
             <Input
               label="Business Points"
+              max={100}
+              min={0}
               variant="outlined"
               type="number"
               value={formData.businessPoints}
               onChange={handleChange('businessPoints')}
-              helperText="Maximum 100"
-              inputProps={{
-                min: 0,
-                max: 100,
-              }}
             />
           </div>
 
           <div>
-            <Typography variant="h6" color="blue-gray" >
-            Story Points
-          </Typography>
+            <Typography variant="h6" color="blue-gray">
+              Story Points
+            </Typography>
             <Select
-              value={formData.storyPoints}
-              onChange={handleChange('storyPoints')}
+              value={formData.storyPoints ? String(formData.storyPoints) : ''}
+              onChange={handleSelectChange('storyPoints')}
               label="Story Points"
-              inputProps={{
-                tabIndex: -1,
-              }}
             >
               {fibonacciSequence.map((point) => (
-                <Option key={point} value={point}>
+                <Option key={point} value={String(point)}>
                   {point}
                 </Option>
               ))}
@@ -215,8 +219,6 @@ export default function UserStoryForm() {
             <Button
               variant="outlined"
               onClick={handleReset}
-              size="large"
-              fullWidth
             >
               Reset
             </Button>
@@ -224,9 +226,6 @@ export default function UserStoryForm() {
           <div className="col-span-2">
             <Button
               type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
             >
               Create User Story
             </Button>
