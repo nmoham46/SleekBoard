@@ -1,67 +1,50 @@
-import UserStory from "../models/UserStory.model.js";
+import UserStory from "../models/userStories.model.js";
+import { StatusCodes } from "http-status-codes";
 
-const pick = (obj, keys) =>
-  Object.fromEntries(Object.entries(obj).filter(([k]) => keys.includes(k)));
 
-export async function createStory(req, res) {
+export async function createUserStories(req, res) {
   try {
-    const data = pick(req.body, [
-      "title","description","acceptanceCriteria","priority",
-      "status","storyPoints","sprintId","assignees"
-    ]);
-    data.createdBy = req.headers["x-user"] || "unknown";
-    data.updatedBy = data.createdBy;
-
-    const story = await UserStory.create(data);
-    res.status(201).json(story);
+    const userStory = new UserStory(req.body);
+    const savedStory = await userStory.save();
+    res.status(StatusCodes.CREATED).json(savedStory);
   } catch (e) {
-    res.status(400).json({ error: e.message });
+    res.status(StatusCodes.NOT_FOUND).json({ error: e.message });
   }
 }
 
-export async function getStory(req, res) {
+export async function getUserStory(req, res) {
   const s = await UserStory.findById(req.params.id);
-  if (!s) return res.status(404).json({ error: "Not found" });
-  res.json(s);
+  if (!s) return res.status(StatusCodes.NOT_FOUND).json({ error: "Not found" });
+  res.status(StatusCodes.OK).json(s);
 }
 
-export async function updateStory(req, res) {
-  const updates = pick(req.body, [
-    "title","description","acceptanceCriteria","priority",
-    "status","storyPoints","sprintId","assignees"
-  ]);
-  updates.updatedBy = req.headers["x-user"] || "unknown";
-
-  const s = await UserStory.findByIdAndUpdate(req.params.id, updates, {
-    new: true, runValidators: true
-  });
-  if (!s) return res.status(404).json({ error: "Not found" });
-  res.json(s);
+export async function updateUserStory(req, res) {
+  try {
+    const userStory = await UserStory.findById(req.params.id);
+    if (!userStory) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
+    }
+    res.status(StatusCodes.OK).json(userStory);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
 }
 
-export async function deleteStory(req, res) {
-  const out = await UserStory.findByIdAndDelete(req.params.id);
-  if (!out) return res.status(404).json({ error: "Not found" });
-  res.status(204).send();
+export async function deleteUserStory(req, res) {
+  try {
+    const out = await UserStory.findByIdAndDelete(req.params.id);
+    if (!out) return res.status(StatusCodes.NOT_FOUND).json({ error: "User story not found" });
+    res.status(StatusCodes.NO_CONTENT).send();
+  } catch (e) {
+    res.status(StatusCodes.NO_CONTENT).json({ error: e.message });
+  }
 }
 
-export async function listStories(req, res) {
-  const { q, status, priority, sprintId, assignee, page = 1, limit = 20, sort = "-createdAt" } = req.query;
-
-  const filter = {};
-  if (q) filter.$text = { $search: q };
-  if (status) filter.status = status;
-  if (priority) filter.priority = priority;
-  if (sprintId) filter.sprintId = sprintId;
-  if (assignee) filter.assignees = assignee;
-
-  const p = Math.max(parseInt(page), 1);
-  const lim = Math.min(Math.max(parseInt(limit), 1), 100);
-
-  const [data, total] = await Promise.all([
-    UserStory.find(filter).sort(sort.split(",").join(" ")).skip((p - 1) * lim).limit(lim),
-    UserStory.countDocuments(filter)
-  ]);
-
-  res.json({ data, page: p, limit: lim, total });
+export async function listUserStories(req, res) {
+  try {
+    const stories = await UserStory.find();
+    res.status(StatusCodes.OK).json(stories);
+  } catch (e) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: e.message });
+  }
 }
