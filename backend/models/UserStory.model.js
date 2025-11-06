@@ -1,21 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
+const { Schema } = mongoose;
 
-const UserStorySchema = new mongoose.Schema(
+const UserStorySchema = new Schema(
   {
-    title: { type: String, required: true, minlength: 5, maxlength: 120 },
-    description: { type: String, maxlength: 5000 },
-    acceptanceCriteria: { type: [String], default: [] },
-    priority: { type: String, enum: ["P0","P1","P2"], default: "P2" },
-    status: { type: String, enum: ["backlog","in_progress","review","done"], default: "backlog" },
-    storyPoints: { type: Number, min: 0, max: 100 },
-    sprintId: { type: String },
-    assignees: { type: [String], default: [] },
-    createdBy: { type: String },
-    updatedBy: { type: String }
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    status: { type: String, enum: ["todo", "in-review", "sprint-ready"], default: "todo" },
+    businessValue: { type: Number, required: true, min: 1, max: 100 },
+    storyPoint: { type: Number, required: true, enum: [1, 2, 3, 5, 8, 13, 21, 34, 55] },
+    assignedTo: { type: String },
+    comments: { type: [String], default: [] }
   },
   { timestamps: true }
 );
 
-UserStorySchema.index({ title: "text", description: "text" });
+UserStorySchema.index({ createdAt: -1 }); // sort newest first
 
-export default mongoose.model("UserStory", UserStorySchema);
+export default model("UserStory", UserStorySchema);
