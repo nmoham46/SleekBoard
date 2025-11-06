@@ -215,19 +215,17 @@ export default function UserStoryForm() {
             />
           </div>
 
-          <div className="col-span-1">
+          <div className='flex gap-4'>
+            <Button
+              type="submit"
+            >
+              Create User Story
+            </Button>
             <Button
               variant="outlined"
               onClick={handleReset}
             >
               Reset
-            </Button>
-          </div>
-          <div className="col-span-2">
-            <Button
-              type="submit"
-            >
-              Create User Story
             </Button>
           </div>
         </div>
