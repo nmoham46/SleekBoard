@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import userStoryRouter from './routes/userStories.route.js';
+import userStoriesRoutes from "./routes/userStories.route.js";
 
 dotenv.config();
 const app = express();
@@ -22,8 +22,10 @@ app.get("/health", (req, res) => {
   console.log("Server works")
 });
 
-app.use('/api/v1/userStories',userStoryRouter);
+// User Stories routes
+app.use("/api/v1/user-stories", userStoriesRoutes);
+
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
