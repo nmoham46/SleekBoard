@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import userStoryRouter from './routes/userStories.route.js';
-
 dotenv.config();
 const app = express();
 
@@ -22,7 +20,6 @@ app.get("/health", (req, res) => {
   console.log("Server works")
 });
 
-app.use('/api/v1/userStories',userStoryRouter);
 
 // Start server
 const PORT = process.env.PORT || 5000;
