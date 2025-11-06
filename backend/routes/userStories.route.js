@@ -1,18 +1,18 @@
 import { Router } from "express";
 import {
-  createStory,
-  getStory,
-  updateStory,
-  deleteStory,
-  listStories
+  createUserStories,
+  getUserStory,
+  updateUserStory,
+  deleteUserStory,
+  listUserStories
 } from "../controllers/userStories.controller.js";
 
 const router = Router();
 
-router.get("/", listStories);
-router.post("/", createStory);
-router.get("/:id", getStory);
-router.patch("/:id", updateStory);
-router.delete("/:id", deleteStory);
+router.get("/", listUserStories);
+router.post("/", createUserStories);
+router.get("/:id", getUserStory);
+router.patch("/:id", updateUserStory);
+router.delete("/:id", deleteUserStory);
 
 export default router;
