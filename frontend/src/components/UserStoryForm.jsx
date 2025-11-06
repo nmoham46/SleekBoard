@@ -24,7 +24,7 @@ export default function UserStoryForm() {
   const [errors, setErrors] = useState({});
 
   const handleChange = (field) => (event) => {
-    const value = event?.target?.value || event;
+    const value = event?.target?.value ?? '';
     setFormData((prev) => ({
       ...prev,
       [field]: value,
