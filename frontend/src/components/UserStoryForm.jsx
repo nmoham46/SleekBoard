@@ -61,10 +61,6 @@ export default function UserStoryForm() {
       newErrors.title = 'Title is required';
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-
     if (!formData.status) {
       newErrors.status = 'Status is required';
     }
@@ -147,7 +143,6 @@ export default function UserStoryForm() {
             <Textarea
               label="Description"
               variant="outlined"
-              required
               rows={4}
               value={formData.description}
               onChange={handleChange('description')}
