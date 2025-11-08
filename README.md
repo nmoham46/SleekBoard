@@ -34,7 +34,7 @@ npm install
 Create a `.env` file in the `backend/` directory and add necessary environment variables.
 ```
 PORT=5050
-MONGO_URI=mongodb+srv://SleekBoard_View:Pz9KYNKRUaBEw0Cs@cluster0.egyquin.mongodb.net/?appName=Cluster0
+MONGO_URI=mongodb+srv://sleekBoard_View:Pz9KYNKRUaBEw0Cs@cluster0.egyquin.mongodb.net/?appName=Cluster0
 ```
 
 ### Run the backend server
