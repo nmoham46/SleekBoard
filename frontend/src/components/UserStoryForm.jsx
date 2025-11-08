@@ -1,3 +1,4 @@
+import { createUserStory } from '../services/apis/userStories';
 import { useState } from 'react';
 import {
   Input,
@@ -88,22 +89,28 @@ export default function UserStoryForm() {
     return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    const { isValid, errors: validationErrors } = validateForm();
-    console.log('Validation result:', isValid, 'Errors:', validationErrors);
+  const { isValid, errors: validationErrors } = validateForm();
+  console.log('Validation result:', isValid, 'Errors:', validationErrors);
 
-    if (isValid) {
-      // Handle form submission here
-      console.log('Form submitted:', formData);
-      // You can add API call or other submission logic here
-    } else {
-      // Validation failed
-      const errorMessages = Object.values(validationErrors).filter((msg) => msg !== '');
-      console.log('Validation failed, errors:', errorMessages);
-    }
-  };
+  if (!isValid) {
+    const errorMessages = Object.values(validationErrors).filter(Boolean);
+    console.log('Validation failed, errors:', errorMessages);
+    return;
+  }
+
+  try {
+    const res = await createUserStory(formData);  // <-- CALL THE API
+    console.log('Story Created:', res);
+    handleReset();
+    alert('User Story Created Successfully!');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to create user story.');
+  }
+};
 
   const handleReset = () => {
     setFormData({
