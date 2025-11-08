@@ -1,9 +1,11 @@
 import '@/styles/App.css'
+import { Navigationbar } from './components/Navbar'
 
 function App() {
   return (
-    <div className="">
-      Sleek Board
+    <div className="p-4">
+
+      <Navigationbar />
     </div>
   )
 }
