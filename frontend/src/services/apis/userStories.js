@@ -30,3 +30,14 @@ export async function getAllUserStories() {
     throw err;
   }
 }
+
+/* 3. Get user story by ID */
+export async function getUserStoryById(id) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`);
+    return await response.json();
+  } catch (err) {
+    console.error("Error fetching user story:", err);
+    throw err;
+  }
+}
