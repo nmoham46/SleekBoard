@@ -32,7 +32,6 @@ npm install
 
 ### Configure Environment Variables
 Create a `.env` file in the `backend/` directory and add necessary environment variables.
-Example:
 ```
 PORT=5050
 MONGO_URI=mongodb+srv://SleekBoard_View:Pz9KYNKRUaBEw0Cs@cluster0.egyquin.mongodb.net/?appName=Cluster0
@@ -67,6 +66,12 @@ npm install
 ### Build the frontend server
 ```sh
 npm run build
+```
+
+### Configure Environment Variables
+Create a `.env` file in the `backend/` directory and add necessary environment variables.
+```
+VITE_BACKEND_URL = http://localhost:5050
 ```
 
 ### Run the frontend server in Development mode
