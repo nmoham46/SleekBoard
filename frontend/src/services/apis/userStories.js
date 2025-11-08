@@ -12,3 +12,21 @@ export async function createUserStory(data) {
     throw err;
   }
 }
+/*
+1.Get all user stories (no data only response json)
+2.Get user story by id
+3.Update/Edit user story by id
+4.Delete user story by id
+*/
+
+export async function getAllUserStories() {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/user-stories`, {
+      method: "GET",
+    });
+    return await response.json();
+  } catch (err) {
+    console.error("Error fetching user stories:", err);
+    throw err;
+  }
+}
