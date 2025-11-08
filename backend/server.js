@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
+import userStoriesRoutes from "./routes/userStories.route.js";
+
 dotenv.config();
 const app = express();
 
@@ -20,16 +22,10 @@ app.get("/health", (req, res) => {
   console.log("Server works")
 });
 
-app.post("/api/userstories", (req, res) => {
-  console.log("Received user story from frontend:", req.body);
+// User Stories routes
+app.use("/api/v1/user-stories", userStoriesRoutes);
 
-  return res.status(201).json({
-    ok: true,
-    message: "Backend received the story!",
-    data: req.body
-  });
-});
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
