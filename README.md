@@ -69,7 +69,7 @@ npm run build
 ```
 
 ### Configure Environment Variables
-Create a `.env` file in the `backend/` directory and add necessary environment variables.
+Create a `.env` file in the `fronrend/` directory and add necessary environment variables.
 ```
 VITE_BACKEND_URL = http://localhost:5050
 ```
