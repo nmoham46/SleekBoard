@@ -38,4 +38,4 @@ export const deleteUserStory = async (id) => {
     console.error("Error: " + error)
     throw new Error()
   }
-} 
+}
