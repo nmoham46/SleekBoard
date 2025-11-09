@@ -33,10 +33,10 @@ export default function UserStoryForm(props) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    status: '',
-    businessValue: 0,
-    storyPoint: 0,
-    assignTo: '',
+    status: statusOptions[0],
+    businessValue: 1,
+    storyPoint: fibonacciSequence[0],
+    // assignTo: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -133,10 +133,10 @@ export default function UserStoryForm(props) {
     setFormData({
       title: '',
       description: '',
-      status: '',
-      businessValue: 0,
-      storyPoint: 0,
-      assignTo: '',
+      status: statusOptions[0],
+      businessValue: 1,
+      storyPoint: fibonacciSequence[0],
+      // assignTo: '',
     });
     setErrors({});
   };
@@ -188,6 +188,7 @@ export default function UserStoryForm(props) {
                 rows={4}
                 value={formData.description}
                 onChange={handleChange('description')}
+                required
               />
             </div>
 
@@ -196,6 +197,7 @@ export default function UserStoryForm(props) {
                 value={formData.status}
                 onChange={handleSelectChange('status')}
                 label="Status"
+                required
               >
                 {statusOptions.map((option) => (
                   <Option key={option} value={option}>
@@ -214,6 +216,7 @@ export default function UserStoryForm(props) {
                 type="number"
                 value={formData.businessValue}
                 onChange={handleChange('businessValue')}
+                required
               />
             </div>
 
@@ -222,6 +225,7 @@ export default function UserStoryForm(props) {
                 value={formData.storyPoint ? String(formData.storyPoint) : ''}
                 onChange={handleSelectChange('storyPoint')}
                 label="Story Point"
+                required
               >
                 {fibonacciSequence.map((point) => (
                   <Option key={point} value={String(point)}>
