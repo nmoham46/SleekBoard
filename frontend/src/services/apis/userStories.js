@@ -1,67 +1,79 @@
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-export async function createUserStory(data) {
+import Http from "@/plugins/Http"
+
+import { HttpStatusCode } from "axios"
+
+
+export const fetchAllUserStories = async () => {
+  const path = "/api/v1/user-stories/"
+
+  const options = {
+    method: "GET",
+    url: path
+  }
+
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/user-stories`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    return await response.json();
-  } catch (err) {
-    console.error("Error creating user story:", err);
-    throw err;
+    const response = await Http(options)
+    return response.status == HttpStatusCode.Ok ? response.data : null
+  }
+  catch (error) {
+    console.error("Failure in getAllUserStories api call")
+    console.error("Error: " + error)
+    throw new Error()
   }
 }
 
-/* Get all user stories (no data only response json) */
-export async function getAllUserStories() {
+export const createUserStory = async (data) => {
+  const path = `/api/v1/user-stories/`
+
+  const options = {
+    method: "POST",
+    url: path,
+    data: data
+  }
+
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/user-stories`, {
-      method: "GET",
-    });
-    return await response.json();
-  } catch (err) {
-    console.error("Error fetching user stories:", err);
-    throw err;
+    await Http(options)
+  }
+  catch (error) {
+    console.error("Failure in createUserStory api call")
+    console.error("Error: " + error)
+    throw new Error()
   }
 }
 
-/*  Get user story by ID */
-export async function getUserStoryById(id) {
+export const updateUserStory = async (id, data) => {
+  const path = `/api/v1/user-stories/${id}`
+
+  const options = {
+    method: "PUT",
+    url: path,
+    data: data
+  }
+
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`);
-    return await response.json();
-  } catch (err) {
-    console.error("Error fetching user story:", err);
-    throw err;
+    await Http(options)
+  }
+  catch (error) {
+    console.error("Failure in updateUserStory api call")
+    console.error("Error: " + error)
+    throw new Error()
   }
 }
 
-/* Update user story by ID */
-export async function updateUserStory(id, data) {
-  try {
-    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+export const deleteUserStory = async (id) => {
+  const path = `/api/v1/user-stories/${id}`
 
-    return await response.json(); // updated story comes back
-  } catch (err) {
-    console.error("Error updating user story:", err);
-    throw err;
+  const options = {
+    method: "DELETE",
+    url: path
   }
-}
 
-/* Delete user story by ID */
-export async function deleteUserStory(id) {
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
-      method: "DELETE",
-    });
-    return response.status; 
-  } catch (err) {
-    console.error("Error deleting user story:", err);
-    throw err;
+    await Http(options)
+  }
+  catch (error) {
+    console.error("Failure in deleteUserStory api call")
+    console.error("Error: " + error)
+    throw new Error()
   }
 }
