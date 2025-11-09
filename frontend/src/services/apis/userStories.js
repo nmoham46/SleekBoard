@@ -41,3 +41,19 @@ export async function getUserStoryById(id) {
     throw err;
   }
 }
+
+/* 4. Update user story by ID */
+export async function updateUserStory(id, data) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    return await response.json(); // updated story comes back
+  } catch (err) {
+    console.error("Error updating user story:", err);
+    throw err;
+  }
+}

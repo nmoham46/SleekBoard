@@ -20,15 +20,22 @@ export async function getUserStory(req, res) {
 
 export async function updateUserStory(req, res) {
   try {
-    const userStory = await UserStory.findById(req.params.id);
-    if (!userStory) {
+    const updatedStory = await UserStory.findByIdAndUpdate(
+      req.params.id,      // which story to update
+      req.body,           // what to update it with
+      { new: true, runValidators: true }  // return updated version + enforce schema rules
+    );
+
+    if (!updatedStory) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
     }
-    res.status(StatusCodes.OK).json(userStory);
+
+    res.status(StatusCodes.OK).json(updatedStory);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 }
+
 
 export async function deleteUserStory(req, res) {
   try {
