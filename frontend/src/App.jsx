@@ -1,9 +1,14 @@
 import '@/styles/App.css'
+
 import UserStories from '@/pages/UserStories'
+
+import { Navigationbar } from '@/components/layout/navbar/Navbar'
+
 
 function App() {
   return (
-    <div className="">
+    <div>
+      <Navigationbar />
       <UserStories />
     </div>
   )
