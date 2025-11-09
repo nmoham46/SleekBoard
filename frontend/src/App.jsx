@@ -1,9 +1,10 @@
 import '@/styles/App.css'
+import UserStories from '@/pages/UserStories'
 
 function App() {
   return (
     <div className="">
-      Sleek Board
+      <UserStories />
     </div>
   )
 }
