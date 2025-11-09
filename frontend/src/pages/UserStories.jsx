@@ -74,21 +74,25 @@ const UserStories = () => {
               Create
               <IoMdAdd className="text-h6"/>
             </Button>
+            
+            {stories.length ? (
+              <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
+                {stories.map((storyData) => (
+                  <div className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
+                    <div className="text-center sm:text-start sm:col-span-3">
+                      <span> {storyData.title} </span>
+                    </div>
 
-            <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
-              {stories.map((storyData) => (
-                <div className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
-                  <div className="text-center sm:text-start sm:col-span-3">
-                    <span> {storyData.title} </span>
+                    <div className="flex items-center justify-center gap-4 justify-self-end">
+                      <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
+                      <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
+                    </div>
                   </div>
-
-                  <div className="flex items-center justify-center gap-4 justify-self-end">
-                    <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
-                    <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <h4 className="text-center text-h4 border-2 border-info rounded p-4"> No User Stories Available... </h4>
+            )}
           </div>
         </div>
       </div>
