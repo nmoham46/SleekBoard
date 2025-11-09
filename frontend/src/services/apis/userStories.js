@@ -57,3 +57,16 @@ export async function updateUserStory(id, data) {
     throw err;
   }
 }
+
+/* 5. Delete user story by ID */
+export async function deleteUserStory(id) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
+      method: "DELETE",
+    });
+    return response.status; // expected 204 -> no content
+  } catch (err) {
+    console.error("Error deleting user story:", err);
+    throw err;
+  }
+}
