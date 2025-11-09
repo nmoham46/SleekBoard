@@ -12,7 +12,7 @@ const router = Router();
 router.get("/", listUserStories);
 router.post("/", createUserStories);
 router.get("/:id", getUserStory);
-router.patch("/:id", updateUserStory);
+router.put("/:id", updateUserStory);
 router.delete("/:id", deleteUserStory);
 
 export default router;
