@@ -12,13 +12,8 @@ export async function createUserStory(data) {
     throw err;
   }
 }
-/*
-1.Get all user stories (no data only response json)
-2.Get user story by id
-3.Update/Edit user story by id
-4.Delete user story by id
-*/
 
+/* Get all user stories (no data only response json) */
 export async function getAllUserStories() {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/user-stories`, {
@@ -31,7 +26,7 @@ export async function getAllUserStories() {
   }
 }
 
-/* 3. Get user story by ID */
+/*  Get user story by ID */
 export async function getUserStoryById(id) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`);
@@ -42,7 +37,7 @@ export async function getUserStoryById(id) {
   }
 }
 
-/* 4. Update user story by ID */
+/* Update user story by ID */
 export async function updateUserStory(id, data) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
@@ -58,7 +53,7 @@ export async function updateUserStory(id, data) {
   }
 }
 
-/* 5. Delete user story by ID */
+/* Delete user story by ID */
 export async function deleteUserStory(id) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
