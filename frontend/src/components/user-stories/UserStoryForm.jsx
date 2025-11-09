@@ -156,11 +156,11 @@ export default function UserStoryForm(props) {
             dismiss={{
               outsidePress: false
             }} 
-            className="p-8">
+            className="p-2 md:p-8">
 
       <DialogHeader className='flex justify-between'>
-        <h4 className='text-h2'>
-          {isEditing ? "Edit " : "Create "} Create User Story
+        <h4 className='text-h4 md:text-h2'>
+          {isEditing ? "Edit " : "Create "} User Story
         </h4>
 
         <IconButton size='sm' variant='text' onClick={handleFormOpen}>
@@ -245,7 +245,7 @@ export default function UserStoryForm(props) {
               />
             </div> */}
 
-            <div className='md:col-span-3 flex gap-4'>
+            <div className='gap-4 flex flex-col sm:flex-row md:col-span-3'>
               <Button
                 type="submit"
               >
