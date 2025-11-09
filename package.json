@@ -1,0 +1,24 @@
+{
+  "name": "sleekboard",
+  "version": "1.0.0",
+  "description": "This project consists of a **Node.js backend** and a **React frontend**, both located in their respective subdirectories.",
+  "homepage": "https://github.com/nmoham46/SleekBoard#readme",
+  "bugs": {
+    "url": "https://github.com/nmoham46/SleekBoard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmoham46/SleekBoard.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run dev --prefix frontend\" \"npm run start --prefix backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
