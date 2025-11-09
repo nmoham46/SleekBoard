@@ -1,14 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
-
 import { Button } from "@material-tailwind/react";
+
+import { 
+  fetchAllUserStories,
+  deleteUserStory
+} from "@/services/apis/UserStories"
+
 
 const UserStories = () => {
   const [stories, setStories] = useState([])
+  
+  const initUserStories = async () => {
+    try {
+      const userStories = await fetchAllUserStories()
+      setStories(userStories)
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
 
+  const deleteStory = async (id) => {
+    try {
+      await deleteUserStory(id)
+      await initUserStories()
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    initUserStories()
+  }, [])
 
   return (
     <main>
@@ -22,16 +50,19 @@ const UserStories = () => {
               <IoMdAdd className="text-h6"/>
             </Button>
 
-            <div className="bg-tertiary rounded grid grid-cols-4 w-full py-4 px-6">
-              <div className="col-span-3">
-                <span className="text-accent">#ID </span>
-                <span> Lorem ipsum dolor </span>
-              </div>
+            <div className="flex flex-col gap-5">
+              {stories.map(({ _id, description }) => (
+                <div className="bg-tertiary rounded grid grid-cols-4 w-full py-4 px-6">
+                  <div className="col-span-3">
+                    <span> {description} </span>
+                  </div>
 
-              <div className="flex items-center gap-4 justify-self-end">
-                <FaPencilAlt className=""/>
-                <FaTrashAlt className="text-red-500"/>
-              </div>
+                  <div className="flex items-center gap-4 justify-self-end">
+                    <FaPencilAlt className=""/>
+                    <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(_id)}/>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
