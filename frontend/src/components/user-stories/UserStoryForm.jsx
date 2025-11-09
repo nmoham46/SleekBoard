@@ -1,5 +1,5 @@
-import { createUserStory } from '@/services/apis/UserStories';
-import { useState } from 'react';
+import { createUserStory, updateUserStory } from '@/services/apis/UserStories';
+import { useState, useEffect } from 'react';
 
 import {
   Input,
@@ -7,16 +7,29 @@ import {
   Select,
   Option,
   Button,
-  Typography,
   Dialog,
   DialogHeader,
-  DialogBody
+  DialogBody,
+  IconButton
 } from '@material-tailwind/react';
 
-const fibonacciSequence = [1, 2, 3, 5, 8, 13, 21, 34, 55];
-const statusOptions = ['todo', 'in-review', 'spring-ready'];
+import { IoClose } from "react-icons/io5";
 
-export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
+
+const fibonacciSequence = [1, 2, 3, 5, 8, 13, 21, 34, 55];
+const statusOptions = ['Todo', 'In-Review', 'Sprint-Ready'];
+
+export default function UserStoryForm(props) {
+  const { 
+    isFormOpen, 
+    handleFormOpen, 
+    isEditing, 
+    initUserStories, 
+    selectedStory 
+  } = props
+
+  // --------------------------------------------
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -27,6 +40,8 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
   });
 
   const [errors, setErrors] = useState({});
+
+  // --------------------------------------------
 
   const handleChange = (field) => (event) => {
     const value = event?.target?.value ?? '' ;
@@ -62,28 +77,28 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.title.trim()) {
+    if (!formData?.title?.trim()) {
       newErrors.title = 'Title is required';
     }
 
-    if (!formData.status) {
+    if (!formData?.status) {
       newErrors.status = 'Status is required';
     }
 
-    if (formData.businessValue !== '') {
+    if (formData?.businessValue !== '') {
       const bp = Number(formData.businessValue);
       if (isNaN(bp) || bp < 0 || bp > 100) {
         newErrors.businessValue = 'Business points must be between 0 and 100';
       }
     }
 
-    if (!formData.storyPoint) {
+    if (!formData?.storyPoint) {
       newErrors.storyPoint = 'Story points is required';
     }
 
-    if (!formData.assignTo.trim()) {
-      newErrors.assignTo = 'Assign to is required';
-    }
+    // if (!formData?.assignTo?.trim()) {
+    //   newErrors.assignTo = 'Assign to is required';
+    // }
 
     setErrors(newErrors);
     return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
@@ -102,13 +117,15 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
     }
 
     try {
-      const res = await createUserStory(formData);  
-      console.log('Story Created:', res);
-      handleReset();
-      alert('User Story Created Successfully!');
-    } catch (err) {
+      isEditing ? await updateUserStory(selectedStory._id, formData) : await createUserStory(formData);  
+      await initUserStories()
+      handleFormOpen()
+      
+      alert(`User story ${isEditing ? "updated" : "created"} successfully!`);
+    } 
+    catch (err) {
       console.error(err);
-      alert('Failed to create user story.');
+      alert(`Failed to ${ isEditing ? "update" : "create"} user story.`);
     }
   };
 
@@ -124,10 +141,31 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
     setErrors({});
   };
 
+  // --------------------------------------------
+
+  useEffect(() => {
+    isEditing && selectedStory ? setFormData(selectedStory) : handleReset()
+  }, [isEditing])
+
+  // --------------------------------------------
+
   return (
-    <Dialog size='lg' open={isFormOpen} handler={handleFormOpen} className="p-8">
-      <DialogHeader>
-        <h4 className='text-h2'>Create User Story</h4>
+    <Dialog size='lg' 
+            open={isFormOpen} 
+            handler={handleFormOpen} 
+            dismiss={{
+              outsidePress: false
+            }} 
+            className="p-8">
+
+      <DialogHeader className='flex justify-between'>
+        <h4 className='text-h2'>
+          {isEditing ? "Edit " : "Create "} Create User Story
+        </h4>
+
+        <IconButton size='sm' variant='text' onClick={handleFormOpen}>
+          <IoClose className='text-h4'/>
+        </IconButton>
       </DialogHeader>
 
       <DialogBody>
@@ -193,7 +231,7 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
               </Select>
             </div>
 
-            <div className="md:col-span-3">
+            {/* <div className="md:col-span-3">
               <Input
                 label="Assign To"
                 variant="outlined"
@@ -201,13 +239,13 @@ export default function UserStoryForm({ isFormOpen, handleFormOpen }) {
                 value={formData.assignTo}
                 onChange={handleChange('assignTo')}
               />
-            </div>
+            </div> */}
 
             <div className='md:col-span-3 flex gap-4'>
               <Button
                 type="submit"
               >
-                Create User Story
+                {isEditing ? "Update" : "Create"} User Story
               </Button>
 
               <Button

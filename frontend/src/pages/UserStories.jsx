@@ -16,10 +16,23 @@ import {
 const UserStories = () => {
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [selectedStory, setSelectedStory] = useState(null)
 
   // ------------------------------------------------------
   
   const handleFormOpen = () => setIsFormOpen(!isFormOpen)
+
+  const handleCreateClick = () => {
+    setIsEditing(false)
+    handleFormOpen()
+  }
+
+  const handleEditClick = (storyData) => {
+    setIsEditing(true)
+    setSelectedStory(storyData)
+    handleFormOpen()
+  }
 
   const initUserStories = async () => {
     try {
@@ -56,22 +69,22 @@ const UserStories = () => {
           <div className="flex flex-col w-full max-w-2xl">
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
-            <Button onClick={handleFormOpen} 
+            <Button onClick={handleCreateClick} 
                     className="flex items-center self-center gap-3 mb-6 md:self-start"> 
               Create
               <IoMdAdd className="text-h6"/>
             </Button>
 
             <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
-              {stories.map(({ _id, description }) => (
+              {stories.map((storyData) => (
                 <div className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
                   <div className="text-center sm:text-start sm:col-span-3">
-                    <span> {description} </span>
+                    <span> {storyData.title} </span>
                   </div>
 
                   <div className="flex items-center justify-center gap-4 justify-self-end">
-                    <FaPencilAlt className=""/>
-                    <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(_id)}/>
+                    <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
+                    <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
                   </div>
                 </div>
               ))}
@@ -80,8 +93,11 @@ const UserStories = () => {
         </div>
       </div>
 
-      <UserStoryForm isFormOpen={isFormOpen} 
-                     handleFormOpen={handleFormOpen}/>
+      <UserStoryForm isFormOpen={isFormOpen}
+                     handleFormOpen={handleFormOpen}
+                     isEditing={isEditing}
+                     initUserStories={initUserStories}
+                     selectedStory={selectedStory}/>
     </main>
   )
 }
