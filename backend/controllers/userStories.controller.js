@@ -13,26 +13,26 @@ export async function createUserStories(req, res) {
 }
 
 export async function getUserStory(req, res) {
-  const s = await UserStory.findById(req.params.id);
-  if (!s) return res.status(StatusCodes.NOT_FOUND).json({ error: "Not found" });
-  res.status(StatusCodes.OK).json(s);
+  try {
+    const userStory = await UserStory.findById(req.params.id);
+    if (!userStory) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
+    }
+    res.status(StatusCodes.OK).json(userStory);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
 }
 
 export async function updateUserStory(req, res) {
   try {
-    const updatedStory = await UserStory.findByIdAndUpdate(
-      req.params.id,      // which story to update
-      req.body,           // what to update it with
-      { new: true, runValidators: true }  // return updated version + enforce schema rules
-    );
-
+    const updatedStory = await UserStory.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedStory) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
     }
-
     res.status(StatusCodes.OK).json(updatedStory);
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 }
 
@@ -41,7 +41,7 @@ export async function deleteUserStory(req, res) {
   try {
     const out = await UserStory.findByIdAndDelete(req.params.id);
     if (!out) return res.status(StatusCodes.NOT_FOUND).json({ error: "User story not found" });
-    res.status(StatusCodes.NO_CONTENT).send();
+    res.status(StatusCodes.OK).json({ message: "User story deleted successfully" });
   } catch (e) {
     res.status(StatusCodes.NO_CONTENT).json({ error: e.message });
   }
