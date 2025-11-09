@@ -36,7 +36,6 @@ export async function updateUserStory(req, res) {
   }
 }
 
-
 export async function deleteUserStory(req, res) {
   try {
     const out = await UserStory.findByIdAndDelete(req.params.id);
