@@ -64,7 +64,7 @@ export async function deleteUserStory(id) {
     const response = await fetch(`${BASE_URL}/api/v1/user-stories/${id}`, {
       method: "DELETE",
     });
-    return response.status; // expected 204 -> no content
+    return response.status; 
   } catch (err) {
     console.error("Error deleting user story:", err);
     throw err;

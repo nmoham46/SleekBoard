@@ -17,15 +17,15 @@ export default function UserStoryForm() {
     title: '',
     description: '',
     status: '',
-    businessPoints: '',
-    storyPoints: '',
+    businessValue: 0,
+    storyPoint: 0,
     assignTo: '',
   });
 
   const [errors, setErrors] = useState({});
 
   const handleChange = (field) => (event) => {
-    const value = event?.target?.value ?? '';
+    const value = event?.target?.value ?? '' ;
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -66,15 +66,15 @@ export default function UserStoryForm() {
       newErrors.status = 'Status is required';
     }
 
-    if (formData.businessPoints !== '') {
-      const bp = Number(formData.businessPoints);
+    if (formData.businessValue !== '') {
+      const bp = Number(formData.businessValue);
       if (isNaN(bp) || bp < 0 || bp > 100) {
-        newErrors.businessPoints = 'Business points must be between 0 and 100';
+        newErrors.businessValue = 'Business points must be between 0 and 100';
       }
     }
 
-    if (!formData.storyPoints) {
-      newErrors.storyPoints = 'Story points is required';
+    if (!formData.storyPoint) {
+      newErrors.storyPoint = 'Story points is required';
     }
 
     if (!formData.assignTo.trim()) {
@@ -98,7 +98,7 @@ export default function UserStoryForm() {
   }
 
   try {
-    const res = await createUserStory(formData);  // <-- CALL THE API
+    const res = await createUserStory(formData);  
     console.log('Story Created:', res);
     handleReset();
     alert('User Story Created Successfully!');
@@ -113,8 +113,8 @@ export default function UserStoryForm() {
       title: '',
       description: '',
       status: '',
-      businessPoints: '',
-      storyPoints: '',
+      businessValue: 0,
+      storyPoint: 0,
       assignTo: '',
     });
     setErrors({});
@@ -174,7 +174,7 @@ export default function UserStoryForm() {
           </div>
           <div>
             <Typography variant="h6" color="blue-gray" >
-            Business Points
+            Business Value
           </Typography>
             <Input
               label="Business Points"
@@ -182,8 +182,8 @@ export default function UserStoryForm() {
               min={0}
               variant="outlined"
               type="number"
-              value={formData.businessPoints}
-              onChange={handleChange('businessPoints')}
+              value={formData.businessValue}
+              onChange={handleChange('businessValue')}
             />
           </div>
 
@@ -192,9 +192,9 @@ export default function UserStoryForm() {
               Story Points
             </Typography>
             <Select
-              value={formData.storyPoints ? String(formData.storyPoints) : ''}
-              onChange={handleSelectChange('storyPoints')}
-              label="Story Points"
+              value={formData.storyPoint ? String(formData.storyPoint) : ''}
+              onChange={handleSelectChange('storyPoint')}
+              label="Story Point"
             >
               {fibonacciSequence.map((point) => (
                 <Option key={point} value={String(point)}>
