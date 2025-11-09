@@ -7,7 +7,7 @@ import { Navigationbar } from '@/components/layout/navbar/Navbar'
 
 function App() {
   return (
-    <div>
+    <div className='p-4'>
       <Navigationbar />
       <UserStories />
     </div>
