@@ -12,12 +12,6 @@ export async function createUserStory(data) {
     throw err;
   }
 }
-/* 
-1.Get all user stories (no data only response json)
-2.Get user story by id
-3.Update/Edit user story by id
-4.Delete user story by id
-*/
 
 /* Get all user stories (no data only response json) */
 export async function getAllUserStories() {
