@@ -1,3 +1,5 @@
+import UserStoryForm from "@/components/user-stories/UserStoryForm";
+
 import { useState, useEffect } from "react";
 
 import { FaPencilAlt } from "react-icons/fa";
@@ -13,7 +15,12 @@ import {
 
 const UserStories = () => {
   const [stories, setStories] = useState([])
+  const [isFormOpen, setIsFormOpen] = useState(false)
+
+  // ------------------------------------------------------
   
+  const handleFormOpen = () => setIsFormOpen(!isFormOpen)
+
   const initUserStories = async () => {
     try {
       const userStories = await fetchAllUserStories()
@@ -34,9 +41,13 @@ const UserStories = () => {
     }
   }
 
+  // ------------------------------------------------------
+
   useEffect(() => {
     initUserStories()
   }, [])
+
+  // ------------------------------------------------------
 
   return (
     <main>
@@ -45,7 +56,8 @@ const UserStories = () => {
           <div className="flex flex-col w-full max-w-2xl">
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
-            <Button className="flex items-center self-center gap-3 mb-6 md:self-start"> 
+            <Button onClick={handleFormOpen} 
+                    className="flex items-center self-center gap-3 mb-6 md:self-start"> 
               Create
               <IoMdAdd className="text-h6"/>
             </Button>
@@ -67,6 +79,9 @@ const UserStories = () => {
           </div>
         </div>
       </div>
+
+      <UserStoryForm isFormOpen={isFormOpen} 
+                     handleFormOpen={handleFormOpen}/>
     </main>
   )
 }
