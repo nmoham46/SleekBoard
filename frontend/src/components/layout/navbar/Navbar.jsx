@@ -64,7 +64,6 @@ function ProfileMenu() {
           className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
         >
           <Typography
-            variant="medium"
             className="hidden lg:inline-flex lg:mr-2 normal-case"
           >
             {userSelectedRole}

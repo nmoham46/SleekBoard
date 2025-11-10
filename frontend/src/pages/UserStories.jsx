@@ -78,7 +78,7 @@ const UserStories = () => {
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
                 {stories.map((storyData) => (
-                  <div className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
+                  <div key={storyData._id} className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
                     <div className="text-center sm:text-start sm:col-span-3">
                       <span> {storyData.title} </span>
                     </div>

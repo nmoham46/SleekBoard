@@ -119,7 +119,7 @@ export default function UserStoryForm(props) {
     try {
       isEditing ? await updateUserStory(selectedStory._id, formData) : await createUserStory(formData);  
       await initUserStories()
-      handleFormOpen()
+      resetAndCloseModal()
       
       alert(`User story ${isEditing ? "updated" : "created"} successfully!`);
     } 
@@ -141,11 +141,16 @@ export default function UserStoryForm(props) {
     setErrors({});
   };
 
+  const resetAndCloseModal = () => {
+    handleReset()
+    handleFormOpen()
+  }
+
   // --------------------------------------------
 
   useEffect(() => {
-    isEditing && selectedStory ? setFormData(selectedStory) : handleReset()
-  }, [isEditing])
+    if (isEditing && selectedStory) setFormData(selectedStory)
+  }, [isEditing, selectedStory])
 
   // --------------------------------------------
 
@@ -163,7 +168,7 @@ export default function UserStoryForm(props) {
           {isEditing ? "Edit " : "Create "} User Story
         </h4>
 
-        <IconButton size='sm' variant='text' onClick={handleFormOpen}>
+        <IconButton size='sm' variant='text' onClick={resetAndCloseModal}>
           <IoClose className='text-h4'/>
         </IconButton>
       </DialogHeader>
