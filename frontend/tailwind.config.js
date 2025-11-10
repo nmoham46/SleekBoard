@@ -17,7 +17,7 @@ export default withMT({
       colors: {
         "primary": "#333",
         "secondary": "#FFF",
-        "tertiary": "#F2F4F8",
+        "tertiary": "#F0F2F6",
         "neutral": "#F7F9FB",
         "info": "#999FAA",
         "accent": "#F04122",
