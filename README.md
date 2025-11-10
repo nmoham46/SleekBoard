@@ -5,8 +5,8 @@ This project consists of a **Node.js backend** and a **React frontend**, both lo
 
 ## Prerequisites
 Make sure you have the following installed:
-- [Node.js](https://nodejs.org/) (22.21.0 version only)
-- [npm](https://www.npmjs.com/) (10.9.4 version only)
+- [Node.js](https://nodejs.org/) (22.21.0 or higher)
+- [npm](https://www.npmjs.com/) (10.9.4 or higher)
 
 ## Project Structure
 ```
