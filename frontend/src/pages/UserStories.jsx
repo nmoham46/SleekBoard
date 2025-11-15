@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
+import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
 
 import { 
@@ -85,6 +86,7 @@ const UserStories = () => {
 
                     <div className="flex items-center justify-center gap-4 justify-self-end">
                       <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
+                      <BiSolidCommentDetail className="cursor-pointer text-h6" />
                       <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
                     </div>
                   </div>
