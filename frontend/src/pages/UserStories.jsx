@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { Button } from "@material-tailwind/react";
 
@@ -94,6 +95,7 @@ const UserStories = () => {
                     </div>
 
                     <div className="flex items-center justify-center gap-4 justify-self-end">
+<FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)}/>
                       <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
                       <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
                     </div>
