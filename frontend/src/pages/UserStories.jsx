@@ -17,6 +17,7 @@ const UserStories = () => {
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [isViewing, setIsViewing] = useState(false)
   const [selectedStory, setSelectedStory] = useState(null)
 
   // ------------------------------------------------------
@@ -25,11 +26,20 @@ const UserStories = () => {
 
   const handleCreateClick = () => {
     setIsEditing(false)
+    setIsViewing(false);
     handleFormOpen()
   }
 
   const handleEditClick = (storyData) => {
     setIsEditing(true)
+    setSelectedStory(storyData)
+    
+    handleFormOpen()
+  }
+
+  const handleViewClick = (storyData) => {
+    setIsViewing(true)
+    setIsEditing(false)
     setSelectedStory(storyData)
     handleFormOpen()
   }
