@@ -112,6 +112,7 @@ const UserStories = () => {
       <UserStoryForm isFormOpen={isFormOpen}
                      handleFormOpen={handleFormOpen}
                      isEditing={isEditing}
+                     isViewing={isViewing}
                      initUserStories={initUserStories}
                      selectedStory={selectedStory}/>
     </main>
