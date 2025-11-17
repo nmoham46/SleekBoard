@@ -1,5 +1,6 @@
 import { createUserStory, updateUserStory } from '@/services/apis/UserStories';
 import { useState, useEffect } from 'react';
+import { useToast } from '@/context/ToastContext';
 
 import {
   Input,
@@ -40,7 +41,7 @@ export default function UserStoryForm(props) {
   });
 
   const [errors, setErrors] = useState({});
-
+  const toast = useToast();
   // --------------------------------------------
 
   const handleChange = (field) => (event) => {
@@ -121,11 +122,11 @@ export default function UserStoryForm(props) {
       await initUserStories()
       resetAndCloseModal()
       
-      alert(`User story ${isEditing ? "updated" : "created"} successfully!`);
+      toast.success(`User story ${isEditing ? "updated" : "created"} successfully!`);
     } 
     catch (err) {
       console.error(err);
-      alert(`Failed to ${ isEditing ? "update" : "create"} user story.`);
+      toast.error(`Failed to ${ isEditing ? "update" : "create"} user story.`);
     }
   };
 
