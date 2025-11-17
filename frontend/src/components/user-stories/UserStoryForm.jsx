@@ -25,7 +25,8 @@ export default function UserStoryForm(props) {
     handleFormOpen, 
     isEditing, 
     initUserStories, 
-    selectedStory 
+    selectedStory,
+    viewOnly 
   } = props
 
   // --------------------------------------------
@@ -107,6 +108,11 @@ export default function UserStoryForm(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Prevent submission in view-only mode
+    if (viewOnly) {
+      return;
+    }
+
     const { isValid, errors: validationErrors } = validateForm();
     console.log('Validation result:', isValid, 'Errors:', validationErrors);
 
@@ -149,8 +155,8 @@ export default function UserStoryForm(props) {
   // --------------------------------------------
 
   useEffect(() => {
-    if (isEditing && selectedStory) setFormData(selectedStory)
-  }, [isEditing, selectedStory])
+    if ((isEditing || viewOnly) && selectedStory) setFormData(selectedStory)
+  }, [isEditing, viewOnly, selectedStory])
 
   // --------------------------------------------
 
@@ -165,7 +171,7 @@ export default function UserStoryForm(props) {
 
       <DialogHeader className='flex justify-between'>
         <h4 className='text-h4 md:text-h2'>
-          {isEditing ? "Edit " : "Create "} User Story
+          {viewOnly ? "View " : isEditing ? "Edit " : "Create "} User Story
         </h4>
 
         <IconButton size='sm' variant='text' onClick={resetAndCloseModal}>
@@ -183,6 +189,7 @@ export default function UserStoryForm(props) {
                 required
                 value={formData.title}
                 onChange={handleChange('title')}
+                disabled={viewOnly}
               />
             </div>
 
@@ -194,6 +201,7 @@ export default function UserStoryForm(props) {
                 value={formData.description}
                 onChange={handleChange('description')}
                 required
+                disabled={viewOnly}
               />
             </div>
 
@@ -203,6 +211,7 @@ export default function UserStoryForm(props) {
                 onChange={handleSelectChange('status')}
                 label="Status"
                 required
+                disabled={viewOnly}
               >
                 {statusOptions.map((option) => (
                   <Option key={option} value={option}>
@@ -222,6 +231,7 @@ export default function UserStoryForm(props) {
                 value={formData.businessValue}
                 onChange={handleChange('businessValue')}
                 required
+                disabled={viewOnly}
               />
             </div>
 
@@ -231,6 +241,7 @@ export default function UserStoryForm(props) {
                 onChange={handleSelectChange('storyPoint')}
                 label="Story Point"
                 required
+                disabled={viewOnly}
               >
                 {fibonacciSequence.map((point) => (
                   <Option key={point} value={String(point)}>
@@ -250,20 +261,22 @@ export default function UserStoryForm(props) {
               />
             </div> */}
 
-            <div className='gap-4 flex flex-col sm:flex-row md:col-span-3'>
-              <Button
-                type="submit"
-              >
-                {isEditing ? "Update" : "Create"} User Story
-              </Button>
+            {!viewOnly && (
+              <div className='gap-4 flex flex-col sm:flex-row md:col-span-3'>
+                <Button
+                  type="submit"
+                >
+                  {isEditing ? "Update" : "Create"} User Story
+                </Button>
 
-              <Button
-                variant="outlined"
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
-            </div>
+                <Button
+                  variant="outlined"
+                  onClick={handleReset}
+                >
+                  Reset
+                </Button>
+              </div>
+            )}
           </div>
         </form>
       </DialogBody>
