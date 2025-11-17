@@ -1,4 +1,5 @@
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
+import CommentsModal from "@/components/comments/CommentsModal";
 
 import { useState, useEffect } from "react";
 
@@ -19,10 +20,13 @@ const UserStories = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [selectedStory, setSelectedStory] = useState(null)
+  const [isCommentOpen, setIsCommentOpen] = useState(false)
+  const [selectedStoryComments, setSelectedStoryComments] = useState([])
 
   // ------------------------------------------------------
   
   const handleFormOpen = () => setIsFormOpen(!isFormOpen)
+  const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
 
   const handleCreateClick = () => {
     setIsEditing(false)
@@ -33,6 +37,11 @@ const UserStories = () => {
     setIsEditing(true)
     setSelectedStory(storyData)
     handleFormOpen()
+  }
+
+  const handleCommentClick = (comments) => {
+    setSelectedStoryComments(comments)
+    handleCommentOpen()
   }
 
   const initUserStories = async () => {
@@ -85,9 +94,14 @@ const UserStories = () => {
                     </div>
 
                     <div className="flex items-center justify-center gap-4 justify-self-end">
-                      <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)}/>
-                      <BiSolidCommentDetail className="cursor-pointer text-h6" />
-                      <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)}/>
+                      <FaPencilAlt className="cursor-pointer" 
+                                   onClick={() => handleEditClick(storyData)}/>
+
+                      <BiSolidCommentDetail className="cursor-pointer text-h6" 
+                                            onClick={() => handleCommentClick(storyData?.comments ?? [])}/>
+
+                      <FaTrashAlt className="text-red-500 cursor-pointer" 
+                                  onClick={() => deleteStory(storyData._id)}/>
                     </div>
                   </div>
                 ))}
@@ -98,6 +112,10 @@ const UserStories = () => {
           </div>
         </div>
       </div>
+
+      <CommentsModal isCommentOpen={isCommentOpen}
+                     handleCommentOpen={handleCommentOpen} 
+                     selectedStory={selectedStory}/>
 
       <UserStoryForm isFormOpen={isFormOpen}
                      handleFormOpen={handleFormOpen}
