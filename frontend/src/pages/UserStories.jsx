@@ -115,7 +115,7 @@ const UserStories = () => {
 
       <CommentsModal isCommentOpen={isCommentOpen}
                      handleCommentOpen={handleCommentOpen} 
-                     selectedStory={selectedStory}/>
+                     selectedStoryComments={selectedStoryComments}/>
 
       <UserStoryForm isFormOpen={isFormOpen}
                      handleFormOpen={handleFormOpen}
