@@ -1,22 +1,32 @@
+
+import CommentsModal from "@/components/comments/CommentsModal";
+
 import { useState, useEffect } from "react";
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
+import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 const UserStories = () => {
-  const [stories, setStories] = useState([]);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [viewOnly, setViewOnly] = useState(false);
-  const [selectedStory, setSelectedStory] = useState(null);
 
-  const handleFormOpen = () => setIsFormOpen(!isFormOpen);
+  const [stories, setStories] = useState([])
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [viewOnly, setViewOnly] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null)
+  const [isCommentOpen, setIsCommentOpen] = useState(false)
+  const [selectedStoryComments, setSelectedStoryComments] = useState([])
+
+  // ------------------------------------------------------
+  
+  const handleFormOpen = () => setIsFormOpen(!isFormOpen)
+  const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
 
   const handleCreateClick = () => {
     setIsEditing(false);
@@ -38,6 +48,11 @@ const UserStories = () => {
     setSelectedStory(storyData);
     handleFormOpen();
   };
+
+  const handleCommentClick = (comments) => {
+    setSelectedStoryComments(comments)
+    handleCommentOpen()
+  }
 
   const initUserStories = async () => {
     try {
@@ -82,9 +97,19 @@ const UserStories = () => {
                     </div>
 
                     <div className="flex items-center justify-center gap-4 justify-self-end">
+
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
-                      <FaPencilAlt className="cursor-pointer" onClick={() => handleEditClick(storyData)} />
-                      <FaTrashAlt className="text-red-500 cursor-pointer" onClick={() => deleteStory(storyData._id)} />
+
+
+                      <FaPencilAlt className="cursor-pointer" 
+                                   onClick={() => handleEditClick(storyData)}/>
+
+                      <BiSolidCommentDetail className="cursor-pointer text-h6" 
+                                            onClick={() => handleCommentClick(storyData?.comments ?? [])}/>
+
+                      <FaTrashAlt className="text-red-500 cursor-pointer" 
+                                  onClick={() => deleteStory(storyData._id)}/>
+
                     </div>
                   </div>
                 ))}
@@ -96,14 +121,17 @@ const UserStories = () => {
         </div>
       </div>
 
-      <UserStoryForm
-        isFormOpen={isFormOpen}
-        handleFormOpen={handleFormOpen}
-        isEditing={isEditing}
-        initUserStories={initUserStories}
-        selectedStory={selectedStory}
-        viewOnly={viewOnly}
-      />
+
+      <CommentsModal isCommentOpen={isCommentOpen}
+                     handleCommentOpen={handleCommentOpen} 
+                     selectedStoryComments={selectedStoryComments}/>
+
+      <UserStoryForm isFormOpen={isFormOpen}
+                     handleFormOpen={handleFormOpen}
+                     isEditing={isEditing}
+                     initUserStories={initUserStories}
+                     viewOnly={viewOnly}
+                     selectedStory={selectedStory}/>
     </main>
   );
 };
