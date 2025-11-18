@@ -10,4 +10,16 @@ const CommentUserStorySchema = new Schema(
   { timestamps: true }
 );
 
+CommentUserStorySchema.post("save", async function (doc, next) {
+  try {
+    await mongoose.model("UserStory").findByIdAndUpdate(
+      doc.userStoryId,
+      { $addToSet: { comments: doc._id } } // $addToSet avoids duplicates
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default model("Comment", CommentUserStorySchema);
