@@ -16,17 +16,16 @@ export async function createUserStories(req, res) {
 
 export async function getUserStory(req, res) {
   try {
-    const userStory = await UserStory.findById(req.params.id);
+   const userStory = await UserStory.findById(req.params.id).populate({
+      path: "comments",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!userStory) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
     }
 
-    // I want to show comments in the user stories JSON body
-    const comments = await Comment.find({ userStoryId: req.params.id }).sort({createdAt: 1,});
-    const storyWithComments = {...userStory.toObject(),comments,};
-
-    return res.status(StatusCodes.OK).json(storyWithComments);
+    return res.status(StatusCodes.OK).json(userStory);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
