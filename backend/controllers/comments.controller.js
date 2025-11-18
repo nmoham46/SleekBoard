@@ -38,7 +38,7 @@ export const updateComment = async (req, res) =>
                         return res.status(StatusCodes.BAD_REQUEST).json({ message: "text is required" });
                     }
 
-                const updated = await Comment.findByIdAndUpdate(id,{ text },{ new: true });
+                const updated = await Comment.findByIdAndUpdate(id,{ commentText },{ new: true });
 
                 if (!updated) 
                     {
