@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+// src/components/comments/CommentsModal.jsx
+import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import { FaTrashAlt, FaPencilAlt, FaCheck, FaTimes } from "react-icons/fa";
 
 import {
   Textarea,
@@ -8,108 +10,232 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  IconButton
-} from '@material-tailwind/react';
+  IconButton,
+} from "@material-tailwind/react";
 
+import {
+  addComment,
+  updateComment,
+  deleteComment,
+} from "@/services/apis/comments";
 
-const dummyComments = [
-  {
-    _id: 1,
-    userStoryId: 0,
-    commentText: "Hello there my name is karim",
-    commentedBy: "Karim Omar"
-  },
-  {
-    _id: 2,
-    userStoryId: 0,
-    commentText: "This looks great! I think we should prioritize this feature.",
-    commentedBy: "Sarah Johnson"
-  },
-  {
-    _id: 3,
-    userStoryId: 0,
-    commentText: "I have some concerns about the implementation. Can we discuss this in the next meeting?",
-    commentedBy: "Michael Chen"
-  },
-  {
-    _id: 4,
-    userStoryId: 0,
-    commentText: "Update: I've completed the initial implementation. Ready for testing.",
-    commentedBy: "Karim Omar"
-  },
-]
+const CommentsModal = ({
+  isCommentOpen,
+  handleCommentOpen,
+  selectedStoryComments = [],
+  userStoryId,
+  currentUserName = "Developer",
+}) => {
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
 
-const CommentsModal = (props) => {
-  const {
-    isCommentOpen,
-    handleCommentOpen,
-    selectedStoryComments
-  } = props
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Load comments whenever story changes or modal opens
+  useEffect(() => {
+    setComments(selectedStoryComments || []);
+  }, [selectedStoryComments, isCommentOpen]);
 
   // --------------------------------------------------
-  
-  const [newComment, setNewComment] = useState("")
-  
+  // Handlers
   // --------------------------------------------------
 
   const handleNewCommentChange = (e) => {
-    e.preventDefault()
+    setNewComment(e.target.value);
+  };
 
-    const newCommentValue = e.target.value
-    setNewComment(newCommentValue)
-  }
+  const submitNewComment = async () => {
+    if (!newComment.trim() || !userStoryId) return;
 
-  const submitNewComment = () => {}
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        userStoryId,
+        commentText: newComment.trim(),
+        commentedBy: currentUserName,
+      };
 
+      const created = await addComment(payload);
+      // created object has _id, commentText, commentedBy, etc.
+      setComments((prev) => [created, ...prev]);
+      setNewComment("");
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
+    setIsSubmitting(false);
+  };
+
+  const startEditing = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditingText(comment.commentText);
+  };
+
+  const cancelEditing = () => {
+    setEditingCommentId(null);
+    setEditingText("");
+  };
+
+  const saveEditedComment = async () => {
+    if (!editingText.trim() || !editingCommentId) return;
+
+    setIsUpdating(true);
+    try {
+      const payload = { commentText: editingText.trim() };
+      const updated = await updateComment(editingCommentId, payload);
+
+      setComments((prev) =>
+        prev.map((c) =>
+          c._id === editingCommentId ? { ...c, ...updated } : c
+        )
+      );
+
+      setEditingCommentId(null);
+      setEditingText("");
+    } catch (err) {
+      console.error("Error updating comment:", err);
+    }
+    setIsUpdating(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!id) return;
+
+    setDeletingId(id);
+    try {
+      await deleteComment(id);
+      setComments((prev) => prev.filter((c) => c._id !== id));
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+    }
+    setDeletingId(null);
+  };
+
+  // --------------------------------------------------
+  // Render
+  // --------------------------------------------------
 
   return (
-    <Dialog size='lg' 
-            open={isCommentOpen} 
-            handler={handleCommentOpen} 
-            dismiss={{
-              outsidePress: false
-            }} 
-            className="p-2 md:p-8">
+    <Dialog
+      size="lg"
+      open={isCommentOpen}
+      handler={handleCommentOpen}
+      dismiss={{ outsidePress: false }}
+      className="p-2 md:p-8"
+    >
+      <DialogHeader className="flex justify-between">
+        <h4 className="text-h4 md:text-h2">Comments</h4>
 
-      <DialogHeader className='flex justify-between'>
-        <h4 className='text-h4 md:text-h2'>
-          Comments
-        </h4>
-
-        <IconButton size='sm' variant='text' onClick={handleCommentOpen}>
-          <IoClose className='text-h4'/>
+        <IconButton size="sm" variant="text" onClick={handleCommentOpen}>
+          <IoClose className="text-h4" />
         </IconButton>
       </DialogHeader>
 
       <DialogBody>
         <div className="flex flex-col gap-4 overflow-auto h-[15rem] p-2">
-          {dummyComments.map(({ _id, commentText, commentedBy }) => (
-            <div key={_id} 
-                 className="flex flex-col text-tPrimary font-primary gap-4 shadow-border rounded p-4">
+          {comments.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No comments yet. Be the first to add one!
+            </p>
+          )}
 
-              <div className="border-b-2 border-tertiary pb-1">
-                <h4>By: {commentedBy}</h4>
+          {comments.map((comment) => (
+            <div
+              key={comment._id}
+              className="flex flex-col text-tPrimary font-primary gap-3 shadow-border rounded p-4"
+            >
+              <div className="flex justify-between items-center border-b-2 border-tertiary pb-1">
+                <h4 className="font-semibold">
+                  By: {comment.commentedBy || "Unknown"}
+                </h4>
+
+                <div className="flex gap-2">
+                  {editingCommentId === comment._id ? (
+                    <>
+                      <IconButton
+                        size="sm"
+                        variant="text"
+                        onClick={saveEditedComment}
+                        disabled={isUpdating}
+                      >
+                        <FaCheck className="w-4 h-4" />
+                      </IconButton>
+                      <IconButton
+                        size="sm"
+                        variant="text"
+                        onClick={cancelEditing}
+                        disabled={isUpdating}
+                      >
+                        <FaTimes className="w-4 h-4" />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <>
+                      <IconButton
+                        size="sm"
+                        variant="text"
+                        onClick={() => startEditing(comment)}
+                      >
+                        <FaPencilAlt className="w-4 h-4" />
+                      </IconButton>
+
+                      <IconButton
+                        size="sm"
+                        variant="text"
+                        onClick={() => handleDelete(comment._id)}
+                        disabled={deletingId === comment._id}
+                      >
+                        <FaTrashAlt className="w-4 h-4" />
+                      </IconButton>
+                    </>
+                  )}
+                </div>
               </div>
 
-              <p>{commentText}</p>
+              {editingCommentId === comment._id ? (
+                <Textarea
+                  variant="outlined"
+                  rows={3}
+                  value={editingText}
+                  onChange={(e) => setEditingText(e.target.value)}
+                />
+              ) : (
+                <p>{comment.commentText}</p>
+              )}
             </div>
           ))}
         </div>
       </DialogBody>
 
-      <DialogFooter className='gap-4 justify-start'>
-        <Textarea
-          label="Comment"
-          variant="outlined"
-          rows={4}
-          value={newComment}
-          onChange={handleNewCommentChange} 
-          className=''/>
+      <DialogFooter className="w-full flex flex-col items-start gap-4">
 
-        <Button onClick={submitNewComment}> Add new comment </Button>
+        <div className="w-full">
+          <Textarea
+            label="Add Comment"
+            variant="outlined"
+            rows={3}
+            value={newComment}
+            onChange={handleNewCommentChange}
+            className="w-full"
+          />
+        </div>
+
+        <Button
+          onClick={submitNewComment}
+          disabled={isSubmitting || !newComment.trim() || !userStoryId}
+          className="px-6 py-3"
+        >
+          {isSubmitting ? "Adding..." : "Add Comment"}
+        </Button>
+
       </DialogFooter>
-    </Dialog>
-  )
-}
 
-export default CommentsModal
+    </Dialog>
+  );
+};
+
+export default CommentsModal;
