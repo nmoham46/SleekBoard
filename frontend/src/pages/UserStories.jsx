@@ -6,6 +6,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { Button } from "@material-tailwind/react";
+import { useToast } from '@/context/ToastContext';
 
 import { 
   fetchAllUserStories,
@@ -18,6 +19,8 @@ const UserStories = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [selectedStory, setSelectedStory] = useState(null)
+  const toast = useToast();
+
 
   // ------------------------------------------------------
   
@@ -41,6 +44,7 @@ const UserStories = () => {
     }
     catch (error) {
       console.error(error)
+      toast.error(error.message || "Error Fetching User Stories")
     }
   }
 
@@ -48,9 +52,11 @@ const UserStories = () => {
     try {
       await deleteUserStory(id)
       await initUserStories()
+      toast.success("User Story Deleted Successfully")
     }
     catch (error) {
       console.error(error)
+      toast.error(error.message || "Error Deleting User Story")
     }
   }
 
