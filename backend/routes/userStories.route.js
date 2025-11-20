@@ -4,7 +4,7 @@ import {
   getUserStory,
   updateUserStory,
   deleteUserStory,
-  listUserStories
+  listUserStories,
 } from "../controllers/userStories.controller.js";
 
 const router = Router();

@@ -1,5 +1,6 @@
 import UserStory from "../models/userStories.model.js";
 import { StatusCodes } from "http-status-codes";
+import Comment from "../models/comments.model.js";
 
 
 export async function createUserStories(req, res) {
@@ -15,13 +16,16 @@ export async function createUserStories(req, res) {
 
 export async function getUserStory(req, res) {
   try {
-    const userStory = await UserStory.findById(req.params.id);
+   const userStory = await UserStory.findById(req.params.id).populate({
+      path: "comments",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!userStory) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: "User story not found" });
     }
 
-    res.status(StatusCodes.OK).json(userStory);
+    return res.status(StatusCodes.OK).json(userStory);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
@@ -58,4 +62,3 @@ export async function listUserStories(req, res) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: e.message });
   }
 }
-
