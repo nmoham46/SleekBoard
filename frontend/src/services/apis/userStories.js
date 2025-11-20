@@ -77,3 +77,28 @@ export const deleteUserStory = async (id) => {
     throw new Error()
   }
 }
+
+
+export const getUserStoryByID = async (id) => {
+  const path = `/api/v1/user-stories/${id}`;
+
+  const options = {
+    method: "GET",
+    url: path,
+  };
+
+  try {
+    const res = await Http(options);
+
+    const story =
+      res?.data?.data      
+      || res?.data        
+      || res;             
+
+    return story;
+  } catch (error) {
+    console.error("Failure in getUserStoryByID api call");
+    console.error("Error:", error);
+    throw error;
+  }
+};
