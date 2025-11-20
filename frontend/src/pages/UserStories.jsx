@@ -1,4 +1,3 @@
-
 import CommentsModal from "@/components/comments/CommentsModal";
 
 import { useState, useEffect } from "react";
@@ -10,23 +9,28 @@ import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
 
-import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
+import {
+  fetchAllUserStories,
+  deleteUserStory,
+  getUserStoryByID
+} from "@/services/apis/UserStories";
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 const UserStories = () => {
-
-  const [stories, setStories] = useState([])
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [stories, setStories] = useState([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [viewOnly, setViewOnly] = useState(false);
-  const [selectedStory, setSelectedStory] = useState(null)
-  const [isCommentOpen, setIsCommentOpen] = useState(false)
-  const [selectedStoryComments, setSelectedStoryComments] = useState([])
+  const [selectedStory, setSelectedStory] = useState(null);
+
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [selectedStoryComments, setSelectedStoryComments] = useState([]);
+  const [selectedStoryId, setSelectedStoryId] = useState(null);
 
   // ------------------------------------------------------
-  
-  const handleFormOpen = () => setIsFormOpen(!isFormOpen)
-  const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
+
+  const handleFormOpen = () => setIsFormOpen(!isFormOpen);
+  const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen);
 
   const handleCreateClick = () => {
     setIsEditing(false);
@@ -49,10 +53,29 @@ const UserStories = () => {
     handleFormOpen();
   };
 
-  const handleCommentClick = (comments) => {
-    setSelectedStoryComments(comments)
-    handleCommentOpen()
-  }
+  const handleCommentClick = async (storyData) => {
+    try {
+      setIsCommentOpen(true);
+      setSelectedStoryId(storyData._id);
+      setSelectedStoryComments([]); 
+
+      const story = await getUserStoryByID(storyData._id);
+
+      let comments = story?.comments || [];
+
+      if (comments.length && typeof comments[0] === "string") {
+        console.warn(
+          "getUserStoryByID returned only comment IDs. " +
+          "Frontend cannot display comment text unless backend populates comments."
+        );
+        comments = [];
+      }
+
+      setSelectedStoryComments(comments);
+    } catch (error) {
+      console.error("Error fetching story for comments:", error);
+    }
+  };
 
   const initUserStories = async () => {
     try {
@@ -81,9 +104,14 @@ const UserStories = () => {
       <div className="container w-full">
         <div className="flex justify-center mt-[10rem]">
           <div className="flex flex-col w-full max-w-2xl">
-            <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
+            <h4 className="text-h1 font-semibold mb-8 text-center">
+              User Stories
+            </h4>
 
-            <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
+            <Button
+              onClick={handleCreateClick}
+              className="flex items-center self-center gap-3 mb-6 md:self-start"
+            >
               Create
               <IoMdAdd className="text-h6" />
             </Button>
@@ -91,47 +119,63 @@ const UserStories = () => {
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
                 {stories.map((storyData) => (
-                  <div key={storyData._id} className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4">
+                  <div
+                    key={storyData._id}
+                    className="bg-tertiary rounded flex flex-col gap-6 w-full py-4 px-6 sm:grid sm:grid-cols-4"
+                  >
                     <div className="text-center sm:text-start sm:col-span-3">
                       <span>{storyData.title}</span>
                     </div>
 
                     <div className="flex items-center justify-center gap-4 justify-self-end">
+                      <FaEye
+                        className="cursor-pointer"
+                        onClick={() => handleViewClick(storyData)}
+                      />
 
-                      <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
+                      <FaPencilAlt
+                        className="cursor-pointer"
+                        onClick={() => handleEditClick(storyData)}
+                      />
 
+                      <BiSolidCommentDetail
+                        className="cursor-pointer text-h6"
+                        onClick={() => handleCommentClick(storyData)}
+                      />
 
-                      <FaPencilAlt className="cursor-pointer" 
-                                   onClick={() => handleEditClick(storyData)}/>
-
-                      <BiSolidCommentDetail className="cursor-pointer text-h6" 
-                                            onClick={() => handleCommentClick(storyData?.comments ?? [])}/>
-
-                      <FaTrashAlt className="text-red-500 cursor-pointer" 
-                                  onClick={() => deleteStory(storyData._id)}/>
-
+                      <FaTrashAlt
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => deleteStory(storyData._id)}
+                      />
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <h4 className="text-center text-h4 border-2 border-info rounded p-4">No User Stories Available...</h4>
+              <h4 className="text-center text-h4 border-2 border-info rounded p-4">
+                No User Stories Available...
+              </h4>
             )}
           </div>
         </div>
       </div>
 
+      <CommentsModal
+        isCommentOpen={isCommentOpen}
+        handleCommentOpen={handleCommentOpen}
+        selectedStoryComments={selectedStoryComments}
+        userStoryId={selectedStoryId}
+        currentUserName="Developer"
+      />
 
-      <CommentsModal isCommentOpen={isCommentOpen}
-                     handleCommentOpen={handleCommentOpen} 
-                     selectedStoryComments={selectedStoryComments}/>
-
-      <UserStoryForm isFormOpen={isFormOpen}
-                     handleFormOpen={handleFormOpen}
-                     isEditing={isEditing}
-                     initUserStories={initUserStories}
-                     viewOnly={viewOnly}
-                     selectedStory={selectedStory}/>
+      <UserStoryForm
+        isFormOpen={isFormOpen}
+        handleFormOpen={handleFormOpen}
+        isEditing={isEditing}
+        initUserStories={initUserStories}
+        viewOnly={viewOnly}
+        selectedStory={selectedStory}
+      />
     </main>
   );
 };
