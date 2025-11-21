@@ -8,6 +8,7 @@ import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
+import { useToast } from '@/context/ToastContext';
 
 import {
   fetchAllUserStories,
@@ -26,7 +27,7 @@ const UserStories = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [selectedStoryComments, setSelectedStoryComments] = useState([]);
   const [selectedStoryId, setSelectedStoryId] = useState(null);
-
+  const toast = useToast();
   // ------------------------------------------------------
 
   const handleFormOpen = () => setIsFormOpen(!isFormOpen);
@@ -81,19 +82,26 @@ const UserStories = () => {
     try {
       const userStories = await fetchAllUserStories();
       setStories(userStories);
-    } catch (error) {
-      console.error(error);
+    } 
+    catch (error) {
+      console.error(error)
+      toast.error(error.message || "Error Fetching User Stories")
     }
-  };
+  }
 
   const deleteStory = async (id) => {
     try {
-      await deleteUserStory(id);
-      await initUserStories();
-    } catch (error) {
-      console.error(error);
+      await deleteUserStory(id)
+      await initUserStories()
+      toast.success("User Story Deleted Successfully")
     }
-  };
+    catch (error) {
+      console.error(error)
+      toast.error(error.message || "Error Deleting User Story")
+    }
+  }
+
+  // ------------------------------------------------------
 
   useEffect(() => {
     initUserStories();
