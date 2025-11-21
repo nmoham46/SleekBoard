@@ -1,6 +1,7 @@
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 import { useState, useEffect } from "react";
+import { useLoader } from "@/context/LoaderContext"
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
@@ -15,12 +16,18 @@ import {
 
 
 const UserStories = () => {
+  const toast = useToast();
+  const {
+    startGlobalLoading,
+    stopGlobalLoading
+  } = useLoader()
+
+  // ------------------------------------------------------
+
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [selectedStory, setSelectedStory] = useState(null)
-  const toast = useToast();
-
 
   // ------------------------------------------------------
   
@@ -39,6 +46,8 @@ const UserStories = () => {
 
   const initUserStories = async () => {
     try {
+      startGlobalLoading()
+
       const userStories = await fetchAllUserStories()
       setStories(userStories)
     }
@@ -46,10 +55,15 @@ const UserStories = () => {
       console.error(error)
       toast.error(error.message || "Error Fetching User Stories")
     }
+    finally {
+      stopGlobalLoading()
+    }
   }
 
   const deleteStory = async (id) => {
     try {
+      startGlobalLoading()
+
       await deleteUserStory(id)
       await initUserStories()
       toast.success("User Story Deleted Successfully")
@@ -57,6 +71,9 @@ const UserStories = () => {
     catch (error) {
       console.error(error)
       toast.error(error.message || "Error Deleting User Story")
+    }
+    finally {
+      stopGlobalLoading()
     }
   }
 

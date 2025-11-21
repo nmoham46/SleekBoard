@@ -1,6 +1,7 @@
 import { createUserStory, updateUserStory } from '@/services/apis/UserStories';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
+import { useLoader } from "@/context/LoaderContext"
 
 import {
   Input,
@@ -28,6 +29,11 @@ export default function UserStoryForm(props) {
     initUserStories, 
     selectedStory 
   } = props
+
+  const {
+    startGlobalLoading,
+    stopGlobalLoading
+  } = useLoader()
 
   // --------------------------------------------
 
@@ -118,6 +124,8 @@ export default function UserStoryForm(props) {
     }
 
     try {
+      startGlobalLoading()
+      
       isEditing ? await updateUserStory(selectedStory._id, formData) : await createUserStory(formData);  
       await initUserStories()
       resetAndCloseModal()
@@ -127,6 +135,9 @@ export default function UserStoryForm(props) {
     catch (err) {
       console.error(err);
       toast.error(`Failed to ${ isEditing ? "update" : "create"} user story.`);
+    }
+    finally {
+      stopGlobalLoading()
     }
   };
 
