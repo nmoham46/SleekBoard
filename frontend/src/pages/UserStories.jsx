@@ -22,12 +22,21 @@ const UserStories = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [viewOnly, setViewOnly] = useState(false);
+<<<<<<< HEAD
   const [selectedStory, setSelectedStory] = useState(null);
 
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [selectedStoryComments, setSelectedStoryComments] = useState([]);
   const [selectedStoryId, setSelectedStoryId] = useState(null);
   const toast = useToast();
+=======
+  const [selectedStory, setSelectedStory] = useState(null)
+  const [isCommentOpen, setIsCommentOpen] = useState(false)
+  const [selectedStoryComments, setSelectedStoryComments] = useState([])
+  const toast = useToast();
+
+
+>>>>>>> origin/US-23/adding-feedback-to-userstory
   // ------------------------------------------------------
 
   const handleFormOpen = () => setIsFormOpen(!isFormOpen);
@@ -82,7 +91,7 @@ const UserStories = () => {
     try {
       const userStories = await fetchAllUserStories();
       setStories(userStories);
-    } 
+    }
     catch (error) {
       console.error(error)
       toast.error(error.message || "Error Fetching User Stories")
