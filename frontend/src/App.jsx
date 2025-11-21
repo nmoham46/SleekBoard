@@ -1,20 +1,28 @@
 import '@/styles/App.css'
 
 import UserStories from '@/pages/UserStories'
+import ToastContainer from '@/components/common/ToastContainer'
+import GlobalLoader from '@/components/layout/loaders/GlobalLoader'
+
+import { ToastProvider } from '@/context/ToastContext'
+import { LoaderProvider } from '@/context/LoaderContext'
 
 import { Navigationbar } from '@/components/layout/navbar/Navbar'
-import { ToastProvider } from '@/context/ToastContext'
-import ToastContainer from '@/components/common/ToastContainer'
+
 
 
 function App() {
   return (
     <ToastProvider>
-      <div className='p-4'>
-        <Navigationbar />
-        <UserStories />
-      </div>
-      <ToastContainer />
+      <LoaderProvider>
+        <div className='p-4'>
+          <Navigationbar />
+          <UserStories />
+        </div>
+
+        <ToastContainer />
+        <GlobalLoader />
+      </LoaderProvider>
     </ToastProvider>
   )
 }
