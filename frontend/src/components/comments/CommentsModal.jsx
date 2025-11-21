@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { FaTrashAlt, FaPencilAlt, FaCheck, FaTimes } from "react-icons/fa";
-
+import { useToast } from "@/context/ToastContext";
 import {
   Textarea,
   Button,
@@ -41,6 +41,8 @@ const CommentsModal = ({
     setComments(selectedStoryComments || []);
   }, [selectedStoryComments, isCommentOpen]);
 
+  const toast = useToast();
+
   // --------------------------------------------------
   // Handlers
   // --------------------------------------------------
@@ -64,6 +66,9 @@ const CommentsModal = ({
       // created object has _id, commentText, commentedBy, etc.
       setComments((prev) => [created, ...prev]);
       setNewComment("");
+
+      toast.success("Comment added successfully!"); 
+
     } catch (err) {
       console.error("Error adding comment:", err);
     }
@@ -96,6 +101,9 @@ const CommentsModal = ({
 
       setEditingCommentId(null);
       setEditingText("");
+
+      toast.success("Comment updated successfully!"); 
+
     } catch (err) {
       console.error("Error updating comment:", err);
     }
@@ -108,6 +116,7 @@ const CommentsModal = ({
     setDeletingId(id);
     try {
       await deleteComment(id);
+      toast.success("Comment deleted successfully!")
       setComments((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
       console.error("Error deleting comment:", err);
