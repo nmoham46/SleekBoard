@@ -27,7 +27,7 @@ export default function UserStoryForm(props) {
     isEditing, 
     initUserStories, 
     selectedStory,
-    viewOnly = false       // ✅ make viewOnly a prop with a default
+    viewOnly = false       
   } = props;
 
   const {
@@ -81,7 +81,6 @@ export default function UserStoryForm(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // ✅ in view-only mode, do nothing on submit
     if (viewOnly) return;
 
     if (!validateForm()) return;
