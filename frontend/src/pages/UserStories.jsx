@@ -44,7 +44,7 @@ const UserStories = () => {
     }
     catch (error) {
       console.error(error)
-      toast.error(error.message || "Error Fetching User Stories")
+      toast.error("Error Fetching User Stories")
     }
   }
 
@@ -56,7 +56,7 @@ const UserStories = () => {
     }
     catch (error) {
       console.error(error)
-      toast.error(error.message || "Error Deleting User Story")
+      toast.error("Error Deleting User Story")
     }
   }
 
