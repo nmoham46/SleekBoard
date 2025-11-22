@@ -13,10 +13,10 @@ export const LoaderProvider = ({ children }) => {
   const stopGlobalLoading = () => setIsGlobalLoading(false)
 
   return <LoaderContext.Provider value={{
-                                        isGlobalLoading,
-                                        startGlobalLoading,
-                                        stopGlobalLoading
-                                       }}>
+    isGlobalLoading,
+    startGlobalLoading,
+    stopGlobalLoading
+  }}>
     {children}
   </LoaderContext.Provider>
 }

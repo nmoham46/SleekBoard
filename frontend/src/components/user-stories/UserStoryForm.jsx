@@ -26,13 +26,16 @@ export default function UserStoryForm(props) {
     handleFormOpen, 
     isEditing, 
     initUserStories, 
-    selectedStory 
-  } = props
+    selectedStory,
+    viewOnly = false
+  } = props;
 
   const {
     startGlobalLoading,
     stopGlobalLoading
-  } = useLoader()
+  } = useLoader();
+
+  const toast = useToast();
 
   // --------------------------------------------
 
@@ -45,7 +48,7 @@ export default function UserStoryForm(props) {
   });
 
   const [errors, setErrors] = useState({});
-  const toast = useToast();
+
   // --------------------------------------------
 
   const handleChange = (field) => (event) => {

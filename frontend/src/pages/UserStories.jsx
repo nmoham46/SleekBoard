@@ -1,8 +1,9 @@
-
 import CommentsModal from "@/components/comments/CommentsModal";
+import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
+import { useToast } from '@/context/ToastContext';
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
@@ -10,10 +11,9 @@ import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
-import { useToast } from '@/context/ToastContext';
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
-import UserStoryForm from "@/components/user-stories/UserStoryForm";
+
 
 const UserStories = () => {
   const toast = useToast();
@@ -30,8 +30,13 @@ const UserStories = () => {
   const [viewOnly, setViewOnly] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null)
 
-  // ------------------------------------------------------
+  // Comments modal state
+  // Used for comments opened and process the rest in comment modal
+  const [isCommentOpen, setIsCommentOpen] = useState(false); 
+  const [selectedStoryId, setSelectedStoryId] = useState(null);
   
+  // ------------------------------------------------------
+
   const handleFormOpen = () => setIsFormOpen(!isFormOpen)
   const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
 
@@ -56,10 +61,10 @@ const UserStories = () => {
     handleFormOpen();
   };
 
-  const handleCommentClick = (comments) => {
-    setSelectedStoryComments(comments)
+  const handleCommentClick = async (id) => {
     handleCommentOpen()
-  }
+    setSelectedStoryId(id);
+  };
 
   const initUserStories = async () => {
     try {
@@ -125,14 +130,14 @@ const UserStories = () => {
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
 
-                      <FaPencilAlt className="cursor-pointer" 
-                                   onClick={() => handleEditClick(storyData)}/>
+                      <FaPencilAlt className="cursor-pointer"
+                        onClick={() => handleEditClick(storyData)} />
 
-                      <BiSolidCommentDetail className="cursor-pointer text-h6" 
-                                            onClick={() => handleCommentClick(storyData?.comments ?? [])}/>
+                      <BiSolidCommentDetail className="cursor-pointer text-h6"
+                        onClick={() => handleCommentClick(storyData._id)} />
 
-                      <FaTrashAlt className="text-red-500 cursor-pointer" 
-                                  onClick={() => deleteStory(storyData._id)}/>
+                      <FaTrashAlt className="text-red-500 cursor-pointer"
+                        onClick={() => deleteStory(storyData._id)} />
 
                     </div>
                   </div>
@@ -147,15 +152,16 @@ const UserStories = () => {
 
 
       <CommentsModal isCommentOpen={isCommentOpen}
-                     handleCommentOpen={handleCommentOpen} 
-                     selectedStoryComments={selectedStoryComments}/>
+        handleCommentOpen={handleCommentOpen}
+        userStoryId={selectedStoryId}
+        currentUserName="Developer" />
 
       <UserStoryForm isFormOpen={isFormOpen}
-                     handleFormOpen={handleFormOpen}
-                     isEditing={isEditing}
-                     initUserStories={initUserStories}
-                     viewOnly={viewOnly}
-                     selectedStory={selectedStory}/>
+        handleFormOpen={handleFormOpen}
+        isEditing={isEditing}
+        initUserStories={initUserStories}
+        viewOnly={viewOnly}
+        selectedStory={selectedStory} />
     </main>
   );
 };
