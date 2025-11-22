@@ -2,6 +2,7 @@
 import CommentsModal from "@/components/comments/CommentsModal";
 
 import { useState, useEffect } from "react";
+import { useLoader } from "@/context/LoaderContext"
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
@@ -15,16 +16,19 @@ import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStorie
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 const UserStories = () => {
+  const toast = useToast();
+  const {
+    startGlobalLoading,
+    stopGlobalLoading
+  } = useLoader()
+
+  // ------------------------------------------------------
 
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [viewOnly, setViewOnly] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null)
-  const [isCommentOpen, setIsCommentOpen] = useState(false)
-  const [selectedStoryComments, setSelectedStoryComments] = useState([])
-  const toast = useToast();
-
 
   // ------------------------------------------------------
   
@@ -59,17 +63,24 @@ const UserStories = () => {
 
   const initUserStories = async () => {
     try {
-      const userStories = await fetchAllUserStories();
-      setStories(userStories);
+      startGlobalLoading()
+
+      const userStories = await fetchAllUserStories()
+      setStories(userStories)
     }
     catch (error) {
       console.error(error)
       toast.error(error.message || "Error Fetching User Stories")
     }
+    finally {
+      stopGlobalLoading()
+    }
   }
 
   const deleteStory = async (id) => {
     try {
+      startGlobalLoading()
+
       await deleteUserStory(id)
       await initUserStories()
       toast.success("User Story Deleted Successfully")
@@ -77,6 +88,9 @@ const UserStories = () => {
     catch (error) {
       console.error(error)
       toast.error(error.message || "Error Deleting User Story")
+    }
+    finally {
+      stopGlobalLoading()
     }
   }
 
