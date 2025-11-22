@@ -110,10 +110,19 @@ export default function UserStoryForm(props) {
   };
 
   useEffect(() => {
-    if ((isEditing || viewOnly) && selectedStory) {
-      setFormData(selectedStory);
+    if (!isFormOpen) return;
+
+    if (selectedStory) {
+      setFormData({
+        title: selectedStory.title ?? '',
+        description: selectedStory.description ?? '',
+        status: selectedStory.status ?? statusOptions[0],
+        businessValue: Number(selectedStory.businessValue) ?? 1,
+        storyPoint: Number(selectedStory.storyPoint) ?? fibonacciSequence[0]
+      });
     }
-  }, [isEditing, viewOnly, selectedStory]);
+  }, [selectedStory, isEditing, viewOnly, isFormOpen]);
+
 
   return (
     <Dialog size="lg" open={isFormOpen} handler={handleFormOpen} dismiss={{ outsidePress: false }} className="p-2 md:p-8">
