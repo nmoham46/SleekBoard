@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@/context/ToastContext";
+import { useLoader } from "@/context/LoaderContext";
+
 import { IoClose } from "react-icons/io5";
 import { FaTrashAlt, FaPencilAlt, FaCheck, FaTimes } from "react-icons/fa";
-import { useToast } from "@/context/ToastContext";
-import { Textarea, Button, Dialog, DialogHeader, DialogBody, DialogFooter, IconButton } from "@material-tailwind/react";
-import { useLoader } from "@/context/LoaderContext";
+
 import { getUserStoryByID } from "@/services/apis/UserStories";
 
 import {
@@ -12,20 +13,36 @@ import {
   deleteComment,
 } from "@/services/apis/comments";
 
-const CommentsModal = ({
-  isCommentOpen,
-  handleCommentOpen,
-  userStoryId,
-  currentUserName = "Developer",
-}) => {
+import {
+  Textarea,
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  IconButton
+} from "@material-tailwind/react";
+
+
+const CommentsModal = (props) => {
+  const {
+    isCommentOpen,
+    handleCommentOpen,
+    userStoryId,
+    currentUserName = "Developer",
+  } = props
+  
+  const toast = useToast();
+  const { startGlobalLoading, stopGlobalLoading } = useLoader();
+
+  // ---------------------------------------
+
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
-  const toast = useToast();
-  const { startGlobalLoading, stopGlobalLoading } = useLoader();
+  // ---------------------------------------
 
   const handleNewCommentChange = (e) => {
     setNewComment(e.target.value);
@@ -33,14 +50,18 @@ const CommentsModal = ({
 
   const initUserStory = async (id) => {
     if (!id) return;
+
     try {
       startGlobalLoading();
+
       const userStory = await getUserStoryByID(id);
       setComments(userStory?.comments || []);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching user story:", error);
       toast.error("Failed to load comments.");
-    } finally {
+    } 
+    finally {
       stopGlobalLoading();
     }
   };
@@ -56,6 +77,7 @@ const CommentsModal = ({
       toast.warning("Please write a comment.");
       return;
     }
+
     if (!userStoryId) {
       toast.error("No user story selected.");
       return;
@@ -71,15 +93,16 @@ const CommentsModal = ({
       };
 
       await addComment(payload);
-
       await initUserStory(userStoryId);
-      setNewComment("");
 
+      setNewComment("");
       toast.success("Comment added successfully!");
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Error adding comment:", err);
       toast.error("Failed to add comment.");
-    } finally {
+    } 
+    finally {
       stopGlobalLoading();
     }
   };
@@ -104,17 +127,19 @@ const CommentsModal = ({
 
     try {
       const payload = { commentText: editingText.trim() };
-      await updateComment(editingCommentId, payload);
 
+      await updateComment(editingCommentId, payload);
       await initUserStory(userStoryId);
 
       cancelEditing();
 
       toast.success("Comment updated successfully!");
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Error updating comment:", err);
       toast.error("Failed to update comment.");
-    } finally {
+    } 
+    finally {
       stopGlobalLoading();
     }
   };
@@ -129,10 +154,12 @@ const CommentsModal = ({
       await initUserStory(userStoryId);
 
       toast.success("Comment deleted successfully!");
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Error deleting comment:", err);
       toast.error("Failed to delete comment.");
-    } finally {
+    } 
+    finally {
       stopGlobalLoading();
     }
   };

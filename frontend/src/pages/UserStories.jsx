@@ -1,7 +1,9 @@
 import CommentsModal from "@/components/comments/CommentsModal";
+import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
+import { useToast } from '@/context/ToastContext';
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
@@ -9,10 +11,9 @@ import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
-import { useToast } from '@/context/ToastContext';
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
-import UserStoryForm from "@/components/user-stories/UserStoryForm";
+
 
 const UserStories = () => {
   const toast = useToast();
@@ -30,13 +31,11 @@ const UserStories = () => {
   const [selectedStory, setSelectedStory] = useState(null)
 
   // Comments modal state
-  const [isCommentOpen, setIsCommentOpen] = useState(false); //used for comments opened and process the rest in comment modal
-   const [selectedStoryId, setSelectedStoryId] = useState(null);
+  // Used for comments opened and process the rest in comment modal
+  const [isCommentOpen, setIsCommentOpen] = useState(false); 
+  const [selectedStoryId, setSelectedStoryId] = useState(null);
   
   // ------------------------------------------------------
-
-
-
 
   const handleFormOpen = () => setIsFormOpen(!isFormOpen)
   const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
@@ -62,15 +61,10 @@ const UserStories = () => {
     handleFormOpen();
   };
 
-    const handleCommentClick = async (id) => {
-    try {
-      setIsCommentOpen(true);
-      setSelectedStoryId(id);
-    } catch (error) {
-      console.error("Error fetching story for comments:", error);
-    } 
+  const handleCommentClick = async (id) => {
+    handleCommentOpen()
+    setSelectedStoryId(id);
   };
-  
 
   const initUserStories = async () => {
     try {
