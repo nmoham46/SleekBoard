@@ -42,7 +42,13 @@ export default function UserStoryForm(props) {
   // --------------------------------------------
 
   const handleChange = (field) => (event) => {
-    const value = event?.target?.value ?? '';
+    let value = event?.target?.value ?? '';
+
+    // FIX negative business value
+    if (field === "businessValue") {
+      if (Number(value) < 1) value = 1;
+    }
+
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (errors[field]) {
