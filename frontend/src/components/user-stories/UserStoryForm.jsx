@@ -141,27 +141,35 @@ export default function UserStoryForm(props) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
             <div className="md:col-span-3">
-              <Input label="Title" variant="outlined" value={formData.title} onChange={handleChange("title")} required disabled={viewOnly} />
+              <Input label="Title" variant="outlined" value={formData.title} onChange={handleChange("title")} required readOnly={viewOnly} />
             </div>
 
             <div className="md:col-span-3">
-              <Textarea label="Description" variant="outlined" rows={4} value={formData.description} onChange={handleChange("description")} required disabled={viewOnly} />
+              <Textarea label="Description" variant="outlined" rows={4} value={formData.description} onChange={handleChange("description")} required readOnly={viewOnly} />
             </div>
 
             <div>
-              <Select label="Status" value={formData.status} onChange={handleSelectChange("status")} required disabled={viewOnly}>
-                {statusOptions.map((option) => <Option key={option} value={option}>{option}</Option>)}
-              </Select>
+              {viewOnly ? (
+                <Input label="Status" variant="outlined" value={formData.status} readOnly/>
+              ) : (
+                <Select label="Status" value={formData.status} onChange={handleSelectChange("status")} required>
+                  {statusOptions.map((option) => (<Option key={option} value={option}>{option}</Option>))}
+                </Select>
+              )}
             </div>
 
             <div>
-              <Input label="Business Points" variant="outlined" type="number" value={formData.businessValue} onChange={handleChange("businessValue")} required disabled={viewOnly} />
+              <Input label="Business Points" variant="outlined" type="number" value={formData.businessValue} onChange={handleChange("businessValue")} required readOnly={viewOnly} />
             </div>
 
             <div>
-              <Select label="Story Point" value={String(formData.storyPoint)} onChange={handleSelectChange("storyPoint")} required disabled={viewOnly}>
-                {fibonacciSequence.map((point) => <Option key={point} value={String(point)}>{point}</Option>)}
-              </Select>
+              {viewOnly ? (
+                <Input label="Story Point" variant="outlined" value={String(formData.storyPoint)}readOnly/>
+              ) : (
+                <Select label="Story Point" value={String(formData.storyPoint)} onChange={handleSelectChange("storyPoint")} required>
+                  {fibonacciSequence.map((point) => ( <Option key={point} value={String(point)}> {point}</Option>))}
+                </Select>
+              )}
             </div>
 
             {!viewOnly && (
