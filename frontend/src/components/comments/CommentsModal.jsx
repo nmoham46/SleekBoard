@@ -1,18 +1,10 @@
-// src/components/comments/CommentsModal.jsx
 import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { FaTrashAlt, FaPencilAlt, FaCheck, FaTimes } from "react-icons/fa";
 import { useToast } from "@/context/ToastContext";
-import {
-  Textarea,
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  IconButton,
-} from "@material-tailwind/react";
+import { Textarea, Button, Dialog, DialogHeader, DialogBody, DialogFooter, IconButton } from "@material-tailwind/react";
 import { useLoader } from "@/context/LoaderContext";
+import { getUserStoryByID } from "@/services/apis/UserStories";
 
 import {
   addComment,
@@ -23,7 +15,6 @@ import {
 const CommentsModal = ({
   isCommentOpen,
   handleCommentOpen,
-  selectedStoryComments = [],
   userStoryId,
   currentUserName = "Developer",
 }) => {
@@ -33,31 +24,44 @@ const CommentsModal = ({
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
-
-  // Load comments on open or change
-  useEffect(() => {
-    setComments(selectedStoryComments || []);
-  }, [selectedStoryComments, isCommentOpen]);
-
   const toast = useToast();
   const { startGlobalLoading, stopGlobalLoading } = useLoader();
-
-  // --------------------------------------------------
-  // Handlers
-  // --------------------------------------------------
 
   const handleNewCommentChange = (e) => {
     setNewComment(e.target.value);
   };
 
-  const submitNewComment = async () => {
-    if (!newComment.trim() || !userStoryId) return;
+  const initUserStory = async (id) => {
+    if (!id) return;
+    try {
+      startGlobalLoading();
+      const userStory = await getUserStoryByID(id);
+      setComments(userStory?.comments || []);
+    } catch (error) {
+      console.error("Error fetching user story:", error);
+      toast.error("Failed to load comments.");
+    } finally {
+      stopGlobalLoading();
+    }
+  };
 
-    setIsSubmitting(true);
-    startGlobalLoading();  
+  useEffect(() => {
+    if (isCommentOpen && userStoryId) {
+      initUserStory(userStoryId);
+    }
+  }, [isCommentOpen, userStoryId]);
+
+  const submitNewComment = async () => {
+    if (!newComment.trim()) {
+      toast.warning("Please write a comment.");
+      return;
+    }
+    if (!userStoryId) {
+      toast.error("No user story selected.");
+      return;
+    }
+
+    startGlobalLoading();
 
     try {
       const payload = {
@@ -66,9 +70,9 @@ const CommentsModal = ({
         commentedBy: currentUserName,
       };
 
-      const created = await addComment(payload);
+      await addComment(payload);
 
-      setComments((prev) => [created, ...prev]);
+      await initUserStory(userStoryId);
       setNewComment("");
 
       toast.success("Comment added successfully!");
@@ -76,8 +80,7 @@ const CommentsModal = ({
       console.error("Error adding comment:", err);
       toast.error("Failed to add comment.");
     } finally {
-      stopGlobalLoading();      
-      setIsSubmitting(false);
+      stopGlobalLoading();
     }
   };
 
@@ -92,58 +95,47 @@ const CommentsModal = ({
   };
 
   const saveEditedComment = async () => {
-    if (!editingText.trim() || !editingCommentId) return;
+    if (!editingText.trim() || !editingCommentId) {
+      toast.warning("Please write a comment.");
+      return;
+    }
 
-    setIsUpdating(true);
-    startGlobalLoading();      
+    startGlobalLoading();
 
     try {
       const payload = { commentText: editingText.trim() };
-      const updated = await updateComment(editingCommentId, payload);
+      await updateComment(editingCommentId, payload);
 
-      setComments((prev) =>
-        prev.map((c) =>
-          c._id === editingCommentId ? { ...c, ...updated } : c
-        )
-      );
+      await initUserStory(userStoryId);
 
-      setEditingCommentId(null);
-      setEditingText("");
+      cancelEditing();
 
       toast.success("Comment updated successfully!");
     } catch (err) {
       console.error("Error updating comment:", err);
       toast.error("Failed to update comment.");
     } finally {
-      stopGlobalLoading();     
-      setIsUpdating(false);
+      stopGlobalLoading();
     }
   };
 
   const handleDelete = async (id) => {
     if (!id) return;
 
-    setDeletingId(id);
-    startGlobalLoading();     
+    startGlobalLoading();
 
     try {
       await deleteComment(id);
-
-      setComments((prev) => prev.filter((c) => c._id !== id));
+      await initUserStory(userStoryId);
 
       toast.success("Comment deleted successfully!");
     } catch (err) {
       console.error("Error deleting comment:", err);
       toast.error("Failed to delete comment.");
     } finally {
-      stopGlobalLoading();     
-      setDeletingId(null);
+      stopGlobalLoading();
     }
   };
-
-  // --------------------------------------------------
-  // Render
-  // --------------------------------------------------
 
   return (
     <Dialog
@@ -186,7 +178,6 @@ const CommentsModal = ({
                         size="sm"
                         variant="text"
                         onClick={saveEditedComment}
-                        disabled={isUpdating}
                       >
                         <FaCheck className="w-4 h-4" />
                       </IconButton>
@@ -195,7 +186,6 @@ const CommentsModal = ({
                         size="sm"
                         variant="text"
                         onClick={cancelEditing}
-                        disabled={isUpdating}
                       >
                         <FaTimes className="w-4 h-4" />
                       </IconButton>
@@ -214,7 +204,6 @@ const CommentsModal = ({
                         size="sm"
                         variant="text"
                         onClick={() => handleDelete(comment._id)}
-                        disabled={deletingId === comment._id}
                       >
                         <FaTrashAlt className="w-4 h-4" />
                       </IconButton>
@@ -252,10 +241,9 @@ const CommentsModal = ({
 
         <Button
           onClick={submitNewComment}
-          disabled={isSubmitting || !newComment.trim() || !userStoryId}
           className="px-6 py-3"
         >
-          {isSubmitting ? "Adding..." : "Add Comment"}
+          {"Add Comment"}
         </Button>
       </DialogFooter>
     </Dialog>

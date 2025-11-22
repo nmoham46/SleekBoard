@@ -90,11 +90,8 @@ export const getUserStoryByID = async (id) => {
   try {
     const res = await Http(options);
 
-    const story =
-      res?.data?.data      
-      || res?.data        
-      || res;             
-
+    const story = res?.data;
+            
     return story;
   } catch (error) {
     console.error("Failure in getUserStoryByID api call");
