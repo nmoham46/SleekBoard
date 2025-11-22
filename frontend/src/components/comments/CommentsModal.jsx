@@ -12,6 +12,7 @@ import {
   DialogFooter,
   IconButton,
 } from "@material-tailwind/react";
+import { useLoader } from "@/context/LoaderContext";
 
 import {
   addComment,
@@ -36,12 +37,13 @@ const CommentsModal = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
-  // Load comments whenever story changes or modal opens
+  // Load comments on open or change
   useEffect(() => {
     setComments(selectedStoryComments || []);
   }, [selectedStoryComments, isCommentOpen]);
 
   const toast = useToast();
+  const { startGlobalLoading, stopGlobalLoading } = useLoader();
 
   // --------------------------------------------------
   // Handlers
@@ -55,6 +57,8 @@ const CommentsModal = ({
     if (!newComment.trim() || !userStoryId) return;
 
     setIsSubmitting(true);
+    startGlobalLoading();  
+
     try {
       const payload = {
         userStoryId,
@@ -63,16 +67,18 @@ const CommentsModal = ({
       };
 
       const created = await addComment(payload);
-      // created object has _id, commentText, commentedBy, etc.
+
       setComments((prev) => [created, ...prev]);
       setNewComment("");
 
-      toast.success("Comment added successfully!"); 
-
+      toast.success("Comment added successfully!");
     } catch (err) {
       console.error("Error adding comment:", err);
+      toast.error("Failed to add comment.");
+    } finally {
+      stopGlobalLoading();      
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const startEditing = (comment) => {
@@ -89,6 +95,8 @@ const CommentsModal = ({
     if (!editingText.trim() || !editingCommentId) return;
 
     setIsUpdating(true);
+    startGlobalLoading();      
+
     try {
       const payload = { commentText: editingText.trim() };
       const updated = await updateComment(editingCommentId, payload);
@@ -102,26 +110,35 @@ const CommentsModal = ({
       setEditingCommentId(null);
       setEditingText("");
 
-      toast.success("Comment updated successfully!"); 
-
+      toast.success("Comment updated successfully!");
     } catch (err) {
       console.error("Error updating comment:", err);
+      toast.error("Failed to update comment.");
+    } finally {
+      stopGlobalLoading();     
+      setIsUpdating(false);
     }
-    setIsUpdating(false);
   };
 
   const handleDelete = async (id) => {
     if (!id) return;
 
     setDeletingId(id);
+    startGlobalLoading();     
+
     try {
       await deleteComment(id);
-      toast.success("Comment deleted successfully!")
+
       setComments((prev) => prev.filter((c) => c._id !== id));
+
+      toast.success("Comment deleted successfully!");
     } catch (err) {
       console.error("Error deleting comment:", err);
+      toast.error("Failed to delete comment.");
+    } finally {
+      stopGlobalLoading();     
+      setDeletingId(null);
     }
-    setDeletingId(null);
   };
 
   // --------------------------------------------------
@@ -173,6 +190,7 @@ const CommentsModal = ({
                       >
                         <FaCheck className="w-4 h-4" />
                       </IconButton>
+
                       <IconButton
                         size="sm"
                         variant="text"
@@ -221,7 +239,6 @@ const CommentsModal = ({
       </DialogBody>
 
       <DialogFooter className="w-full flex flex-col items-start gap-4">
-
         <div className="w-full">
           <Textarea
             label="Add Comment"
@@ -240,9 +257,7 @@ const CommentsModal = ({
         >
           {isSubmitting ? "Adding..." : "Add Comment"}
         </Button>
-
       </DialogFooter>
-
     </Dialog>
   );
 };
