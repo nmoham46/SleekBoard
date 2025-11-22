@@ -1,41 +1,38 @@
-import CommentsModal from "@/components/comments/CommentsModal";
-
 import { useState, useEffect } from "react";
-import { useLoader } from "@/context/LoaderContext"
 
-import { FaPencilAlt } from "react-icons/fa";
-import { FaTrashAlt } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
+import CommentsModal from "@/components/comments/CommentsModal";
+import UserStoryForm from "@/components/user-stories/UserStoryForm";
+
+import { FaPencilAlt, FaTrashAlt, FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
-import { useToast } from '@/context/ToastContext';
 
 import {
   fetchAllUserStories,
   deleteUserStory,
-  getUserStoryByID
+  getUserStoryByID,
 } from "@/services/apis/UserStories";
-import UserStoryForm from "@/components/user-stories/UserStoryForm";
 
 const UserStories = () => {
-  const toast = useToast();
-  const {
-    startGlobalLoading,
-    stopGlobalLoading
-  } = useLoader()
+  const [stories, setStories] = useState([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [viewOnly, setViewOnly] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
+
+  // Comments modal state
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [selectedStoryComments, setSelectedStoryComments] = useState([]);
+  const [selectedStoryId, setSelectedStoryId] = useState(null);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
 
   // ------------------------------------------------------
-
-  const [stories, setStories] = useState([])
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [selectedStory, setSelectedStory] = useState(null)
-
+  // Handlers for form modal
   // ------------------------------------------------------
 
-  const handleFormOpen = () => setIsFormOpen(!isFormOpen);
-  const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen);
+  const handleFormOpen = () => setIsFormOpen((prev) => !prev);
+  const handleCommentOpen = () => setIsCommentOpen((prev) => !prev);
 
   const handleCreateClick = () => {
     setIsEditing(false);
@@ -58,68 +55,56 @@ const UserStories = () => {
     handleFormOpen();
   };
 
+  // ------------------------------------------------------
+  // Comments
+  // ------------------------------------------------------
+
   const handleCommentClick = async (storyData) => {
     try {
       setIsCommentOpen(true);
       setSelectedStoryId(storyData._id);
-      setSelectedStoryComments([]); 
+      setSelectedStoryComments([]);
+      setIsCommentsLoading(true);
 
-      const story = await getUserStoryByID(storyData._id);
-
-      let comments = story?.comments || [];
-
-      if (comments.length && typeof comments[0] === "string") {
-        console.warn(
-          "getUserStoryByID returned only comment IDs. " +
-          "Frontend cannot display comment text unless backend populates comments."
-        );
-        comments = [];
-      }
-
-      setSelectedStoryComments(comments);
+      const fullStory = await getUserStoryByID(storyData._id);
+      // Expect fullStory.comments to be an array of populated comment objects
+      setSelectedStoryComments(fullStory?.comments || []);
     } catch (error) {
       console.error("Error fetching story for comments:", error);
+    } finally {
+      setIsCommentsLoading(false);
     }
   };
 
+  // ------------------------------------------------------
+  // User stories CRUD
+  // ------------------------------------------------------
+
   const initUserStories = async () => {
     try {
-      startGlobalLoading()
-
-      const userStories = await fetchAllUserStories()
-      setStories(userStories)
+      const userStories = await fetchAllUserStories();
+      setStories(userStories || []);
+    } catch (error) {
+      console.error("Error fetching user stories:", error);
     }
-    catch (error) {
-      console.error(error)
-      toast.error(error.message || "Error Fetching User Stories")
-    }
-    finally {
-      stopGlobalLoading()
-    }
-  }
+  };
 
   const deleteStory = async (id) => {
     try {
-      startGlobalLoading()
-
-      await deleteUserStory(id)
-      await initUserStories()
-      toast.success("User Story Deleted Successfully")
+      await deleteUserStory(id);
+      await initUserStories();
+    } catch (error) {
+      console.error("Error deleting user story:", error);
     }
-    catch (error) {
-      console.error(error)
-      toast.error(error.message || "Error Deleting User Story")
-    }
-    finally {
-      stopGlobalLoading()
-    }
-  }
-
-  // ------------------------------------------------------
+  };
 
   useEffect(() => {
     initUserStories();
   }, []);
+
+  // ------------------------------------------------------
+  // Render
+  // ------------------------------------------------------
 
   return (
     <main>
@@ -182,14 +167,17 @@ const UserStories = () => {
         </div>
       </div>
 
+      {/* Comments Modal */}
       <CommentsModal
         isCommentOpen={isCommentOpen}
         handleCommentOpen={handleCommentOpen}
         selectedStoryComments={selectedStoryComments}
         userStoryId={selectedStoryId}
         currentUserName="Developer"
+        isCommentsLoading={isCommentsLoading} // if you want to show spinner inside modal, otherwise ignore in component
       />
 
+      {/* User Story Form */}
       <UserStoryForm
         isFormOpen={isFormOpen}
         handleFormOpen={handleFormOpen}

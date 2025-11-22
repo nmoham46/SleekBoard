@@ -26,13 +26,16 @@ export default function UserStoryForm(props) {
     handleFormOpen, 
     isEditing, 
     initUserStories, 
-    selectedStory 
-  } = props
+    selectedStory,
+    viewOnly = false       // ✅ make viewOnly a prop with a default
+  } = props;
 
   const {
     startGlobalLoading,
     stopGlobalLoading
-  } = useLoader()
+  } = useLoader();
+
+  const toast = useToast();
 
   // --------------------------------------------
 
@@ -45,7 +48,7 @@ export default function UserStoryForm(props) {
   });
 
   const [errors, setErrors] = useState({});
-  const toast = useToast();
+
   // --------------------------------------------
 
   const handleChange = (field) => (event) => {
@@ -77,16 +80,23 @@ export default function UserStoryForm(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // ✅ in view-only mode, do nothing on submit
     if (viewOnly) return;
 
     if (!validateForm()) return;
 
     try {
-      startGlobalLoading()
+      startGlobalLoading();
       
-      isEditing ? await updateUserStory(selectedStory._id, formData) : await createUserStory(formData);  
-      await initUserStories()
-      resetAndCloseModal()
+      if (isEditing && selectedStory?._id) {
+        await updateUserStory(selectedStory._id, formData);
+      } else {
+        await createUserStory(formData);
+      }
+
+      await initUserStories();
+      resetAndCloseModal();
       
       toast.success(`User story ${isEditing ? "updated" : "created"} successfully!`);
     } 
@@ -95,7 +105,7 @@ export default function UserStoryForm(props) {
       toast.error(`Failed to ${ isEditing ? "update" : "create"} user story.`);
     }
     finally {
-      stopGlobalLoading()
+      stopGlobalLoading();
     }
   };
 
@@ -117,12 +127,28 @@ export default function UserStoryForm(props) {
 
   useEffect(() => {
     if ((isEditing || viewOnly) && selectedStory) {
-      setFormData(selectedStory);
+      // You can map only needed fields if selectedStory has extra keys
+      setFormData({
+        title: selectedStory.title ?? '',
+        description: selectedStory.description ?? '',
+        status: selectedStory.status ?? statusOptions[0],
+        businessValue: selectedStory.businessValue ?? 1,
+        storyPoint: selectedStory.storyPoint ?? fibonacciSequence[0],
+      });
+    } else {
+      handleReset();
     }
-  }, [isEditing, viewOnly, selectedStory]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing, viewOnly, selectedStory, isFormOpen]);
 
   return (
-    <Dialog size="lg" open={isFormOpen} handler={handleFormOpen} dismiss={{ outsidePress: false }} className="p-2 md:p-8">
+    <Dialog 
+      size="lg" 
+      open={isFormOpen} 
+      handler={handleFormOpen} 
+      dismiss={{ outsidePress: false }} 
+      className="p-2 md:p-8"
+    >
       <DialogHeader className="flex justify-between">
         <h4 className="text-h4 md:text-h2">
           {viewOnly ? "View" : isEditing ? "Edit" : "Create"} User Story
@@ -138,33 +164,80 @@ export default function UserStoryForm(props) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
             <div className="md:col-span-3">
-              <Input label="Title" variant="outlined" value={formData.title} onChange={handleChange("title")} required disabled={viewOnly} />
+              <Input 
+                label="Title" 
+                variant="outlined" 
+                value={formData.title} 
+                onChange={handleChange("title")} 
+                required 
+                disabled={viewOnly} 
+              />
             </div>
 
             <div className="md:col-span-3">
-              <Textarea label="Description" variant="outlined" rows={4} value={formData.description} onChange={handleChange("description")} required disabled={viewOnly} />
+              <Textarea 
+                label="Description" 
+                variant="outlined" 
+                rows={4} 
+                value={formData.description} 
+                onChange={handleChange("description")} 
+                required 
+                disabled={viewOnly} 
+              />
             </div>
 
             <div>
-              <Select label="Status" value={formData.status} onChange={handleSelectChange("status")} required disabled={viewOnly}>
-                {statusOptions.map((option) => <Option key={option} value={option}>{option}</Option>)}
+              <Select 
+                label="Status" 
+                value={formData.status} 
+                onChange={handleSelectChange("status")} 
+                required 
+                disabled={viewOnly}
+              >
+                {statusOptions.map((option) => (
+                  <Option key={option} value={option}>
+                    {option}
+                  </Option>
+                ))}
               </Select>
             </div>
 
             <div>
-              <Input label="Business Points" variant="outlined" type="number" value={formData.businessValue} onChange={handleChange("businessValue")} required disabled={viewOnly} />
+              <Input 
+                label="Business Points" 
+                variant="outlined" 
+                type="number" 
+                value={formData.businessValue} 
+                onChange={handleChange("businessValue")} 
+                required 
+                disabled={viewOnly} 
+              />
             </div>
 
             <div>
-              <Select label="Story Point" value={String(formData.storyPoint)} onChange={handleSelectChange("storyPoint")} required disabled={viewOnly}>
-                {fibonacciSequence.map((point) => <Option key={point} value={String(point)}>{point}</Option>)}
+              <Select 
+                label="Story Point" 
+                value={String(formData.storyPoint)} 
+                onChange={handleSelectChange("storyPoint")} 
+                required 
+                disabled={viewOnly}
+              >
+                {fibonacciSequence.map((point) => (
+                  <Option key={point} value={String(point)}>
+                    {point}
+                  </Option>
+                ))}
               </Select>
             </div>
 
             {!viewOnly && (
               <div className="gap-4 flex flex-col sm:flex-row md:col-span-3">
-                <Button type="submit">{isEditing ? "Update" : "Create"} User Story</Button>
-                <Button variant="outlined" onClick={handleReset}>Reset</Button>
+                <Button type="submit">
+                  {isEditing ? "Update" : "Create"} User Story
+                </Button>
+                <Button variant="outlined" onClick={handleReset} type="button">
+                  Reset
+                </Button>
               </div>
             )}
 
