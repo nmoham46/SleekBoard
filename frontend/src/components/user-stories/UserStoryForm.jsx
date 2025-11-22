@@ -44,10 +44,20 @@ export default function UserStoryForm(props) {
   const handleChange = (field) => (event) => {
     let value = event?.target?.value ?? '';
 
-    // FIX negative business value
+    
     if (field === "businessValue") {
-      if (Number(value) < 1) value = 1;
+    let num = Number(value);
+
+    if (Number.isNaN(num)) {
+      num = 1;              // default if they clear the field
+    } else if (num < 1) {
+      num = 1;              // min
+    } else if (num > 100) {
+      num = 100;            // max
     }
+
+    value = num;
+  }
 
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -159,7 +169,7 @@ export default function UserStoryForm(props) {
             </div>
 
             <div>
-              <Input label="Business Points" variant="outlined" type="number" value={formData.businessValue} onChange={handleChange("businessValue")} required readOnly={viewOnly} />
+              <Input label="Business Points" variant="outlined" type="number" min={1} max={100} value={formData.businessValue} onChange={handleChange("businessValue")} required readOnly={viewOnly} />
             </div>
 
             <div>
