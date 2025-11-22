@@ -44,21 +44,6 @@ export default function UserStoryForm(props) {
   const handleChange = (field) => (event) => {
     let value = event?.target?.value ?? '';
 
-    
-    if (field === "businessValue") {
-    let num = Number(value);
-
-    if (Number.isNaN(num)) {
-      num = 1;              // default if they clear the field
-    } else if (num < 1) {
-      num = 1;              // min
-    } else if (num > 100) {
-      num = 100;            // max
-    }
-
-    value = num;
-  }
-
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (errors[field]) {
@@ -120,18 +105,8 @@ export default function UserStoryForm(props) {
   };
 
   useEffect(() => {
-    if (!isFormOpen) return;
-
-    if (selectedStory) {
-      setFormData({
-        title: selectedStory.title ?? '',
-        description: selectedStory.description ?? '',
-        status: selectedStory.status ?? statusOptions[0],
-        businessValue: Number(selectedStory.businessValue) ?? 1,
-        storyPoint: Number(selectedStory.storyPoint) ?? fibonacciSequence[0]
-      });
-    }
-  }, [selectedStory, isEditing, viewOnly, isFormOpen]);
+    if (isFormOpen && selectedStory) setFormData(selectedStory)
+  }, [selectedStory, isFormOpen]);
 
 
   return (
