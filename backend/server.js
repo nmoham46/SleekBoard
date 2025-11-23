@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import userStoriesRoutes from "./routes/userStories.route.js";
+import commentsRoutes from "./routes/comments.route.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,9 @@ app.get("/health", (req, res) => {
 
 // User Stories routes
 app.use("/api/v1/user-stories", userStoriesRoutes);
+
+// User stories comments routes
+app.use("/api/v1/comments", commentsRoutes);
 
 
 // Start server

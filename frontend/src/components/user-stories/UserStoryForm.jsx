@@ -1,5 +1,7 @@
 import { createUserStory, updateUserStory } from '@/services/apis/UserStories';
 import { useState, useEffect } from 'react';
+import { useToast } from '@/context/ToastContext';
+import { useLoader } from "@/context/LoaderContext"
 
 import {
   Input,
@@ -15,7 +17,6 @@ import {
 
 import { IoClose } from "react-icons/io5";
 
-
 const fibonacciSequence = [1, 2, 3, 5, 8, 13, 21, 34, 55];
 const statusOptions = ['Todo', 'In-Review', 'Sprint-Ready'];
 
@@ -25,8 +26,16 @@ export default function UserStoryForm(props) {
     handleFormOpen, 
     isEditing, 
     initUserStories, 
-    selectedStory 
-  } = props
+    selectedStory,
+    viewOnly = false
+  } = props;
+
+  const {
+    startGlobalLoading,
+    stopGlobalLoading
+  } = useLoader();
+
+  const toast = useToast();
 
   // --------------------------------------------
 
@@ -35,8 +44,7 @@ export default function UserStoryForm(props) {
     description: '',
     status: statusOptions[0],
     businessValue: 1,
-    storyPoint: fibonacciSequence[0],
-    // assignTo: '',
+    storyPoint: fibonacciSequence[0]
   });
 
   const [errors, setErrors] = useState({});
@@ -44,88 +52,54 @@ export default function UserStoryForm(props) {
   // --------------------------------------------
 
   const handleChange = (field) => (event) => {
-    const value = event?.target?.value ?? '' ;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    let value = event?.target?.value ?? '';
 
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: '',
-      }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
   const handleSelectChange = (field) => (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user selects
     if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: '',
-      }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData?.title?.trim()) {
-      newErrors.title = 'Title is required';
-    }
-
-    if (!formData?.status) {
-      newErrors.status = 'Status is required';
-    }
-
-    if (formData?.businessValue !== '') {
-      const bp = Number(formData.businessValue);
-      if (isNaN(bp) || bp < 0 || bp > 100) {
-        newErrors.businessValue = 'Business points must be between 0 and 100';
-      }
-    }
-
-    if (!formData?.storyPoint) {
-      newErrors.storyPoint = 'Story points is required';
-    }
-
-    // if (!formData?.assignTo?.trim()) {
-    //   newErrors.assignTo = 'Assign to is required';
-    // }
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.status) newErrors.status = "Status is required";
+    if (!formData.storyPoint) newErrors.storyPoint = "Story Point is required";
 
     setErrors(newErrors);
-    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (viewOnly) return;
 
-    const { isValid, errors: validationErrors } = validateForm();
-    console.log('Validation result:', isValid, 'Errors:', validationErrors);
-
-    if (!isValid) {
-      const errorMessages = Object.values(validationErrors).filter(Boolean);
-      console.log('Validation failed, errors:', errorMessages);
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
+      startGlobalLoading()
+      
       isEditing ? await updateUserStory(selectedStory._id, formData) : await createUserStory(formData);  
       await initUserStories()
       resetAndCloseModal()
       
-      alert(`User story ${isEditing ? "updated" : "created"} successfully!`);
+      toast.success(`User story ${isEditing ? "updated" : "created"} successfully!`);
     } 
     catch (err) {
       console.error(err);
-      alert(`Failed to ${ isEditing ? "update" : "create"} user story.`);
+      toast.error(`Failed to ${ isEditing ? "update" : "create"} user story.`);
+    }
+    finally {
+      stopGlobalLoading()
     }
   };
 
@@ -135,139 +109,79 @@ export default function UserStoryForm(props) {
       description: '',
       status: statusOptions[0],
       businessValue: 1,
-      storyPoint: fibonacciSequence[0],
-      // assignTo: '',
+      storyPoint: fibonacciSequence[0]
     });
     setErrors({});
   };
 
   const resetAndCloseModal = () => {
-    handleReset()
-    handleFormOpen()
-  }
-
-  // --------------------------------------------
+    handleReset();
+    handleFormOpen();
+  };
 
   useEffect(() => {
-    if (isEditing && selectedStory) setFormData(selectedStory)
-  }, [isEditing, selectedStory])
+    if (isFormOpen && selectedStory) setFormData(selectedStory)
+  }, [selectedStory, isFormOpen]);
 
-  // --------------------------------------------
 
   return (
-    <Dialog size='lg' 
-            open={isFormOpen} 
-            handler={handleFormOpen} 
-            dismiss={{
-              outsidePress: false
-            }} 
-            className="p-2 md:p-8">
-
-      <DialogHeader className='flex justify-between'>
-        <h4 className='text-h4 md:text-h2'>
-          {isEditing ? "Edit " : "Create "} User Story
+    <Dialog size="lg" open={isFormOpen} handler={handleFormOpen} dismiss={{ outsidePress: false }} className="p-2 md:p-8">
+      <DialogHeader className="flex justify-between">
+        <h4 className="text-h4 md:text-h2">
+          {viewOnly ? "View" : isEditing ? "Edit" : "Create"} User Story
         </h4>
 
-        <IconButton size='sm' variant='text' onClick={resetAndCloseModal}>
-          <IoClose className='text-h4'/>
+        <IconButton size="sm" variant="text" onClick={resetAndCloseModal}>
+          <IoClose className="text-h4" />
         </IconButton>
       </DialogHeader>
 
       <DialogBody>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-3 gap-6">
-              <Input
-                label="Title"
-                variant="outlined"
-                required
-                value={formData.title}
-                onChange={handleChange('title')}
-              />
+
+            <div className="md:col-span-3">
+              <Input label="Title" variant="outlined" value={formData.title} onChange={handleChange("title")} required readOnly={viewOnly} />
             </div>
 
             <div className="md:col-span-3">
-              <Textarea
-                label="Description"
-                variant="outlined"
-                rows={4}
-                value={formData.description}
-                onChange={handleChange('description')}
-                required
-              />
+              <Textarea label="Description" variant="outlined" rows={4} value={formData.description} onChange={handleChange("description")} required readOnly={viewOnly} />
             </div>
 
             <div>
-              <Select
-                value={formData.status}
-                onChange={handleSelectChange('status')}
-                label="Status"
-                required
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
-                  </Option>
-                ))}
-              </Select>
+              {viewOnly ? (
+                <Input label="Status" variant="outlined" value={formData.status} readOnly/>
+              ) : (
+                <Select label="Status" value={formData.status} onChange={handleSelectChange("status")} required>
+                  {statusOptions.map((option) => (<Option key={option} value={option}>{option}</Option>))}
+                </Select>
+              )}
             </div>
 
             <div>
-              <Input
-                label="Business Points"
-                max={100}
-                min={0}
-                variant="outlined"
-                type="number"
-                value={formData.businessValue}
-                onChange={handleChange('businessValue')}
-                required
-              />
+              <Input label="Business Points" variant="outlined" type="number" min={1} max={100} value={formData.businessValue} onChange={handleChange("businessValue")} required readOnly={viewOnly} />
             </div>
 
             <div>
-              <Select
-                value={formData.storyPoint ? String(formData.storyPoint) : ''}
-                onChange={handleSelectChange('storyPoint')}
-                label="Story Point"
-                required
-              >
-                {fibonacciSequence.map((point) => (
-                  <Option key={point} value={String(point)}>
-                    {point}
-                  </Option>
-                ))}
-              </Select>
+              {viewOnly ? (
+                <Input label="Story Point" variant="outlined" value={String(formData.storyPoint)}readOnly/>
+              ) : (
+                <Select label="Story Point" value={String(formData.storyPoint)} onChange={handleSelectChange("storyPoint")} required>
+                  {fibonacciSequence.map((point) => ( <Option key={point} value={String(point)}> {point}</Option>))}
+                </Select>
+              )}
             </div>
 
-            {/* <div className="md:col-span-3">
-              <Input
-                label="Assign To"
-                variant="outlined"
-                required
-                value={formData.assignTo}
-                onChange={handleChange('assignTo')}
-              />
-            </div> */}
+            {!viewOnly && (
+              <div className="gap-4 flex flex-col sm:flex-row md:col-span-3">
+                <Button type="submit">{isEditing ? "Update" : "Create"} User Story</Button>
+                <Button variant="outlined" onClick={handleReset}>Reset</Button>
+              </div>
+            )}
 
-            <div className='gap-4 flex flex-col sm:flex-row md:col-span-3'>
-              <Button
-                type="submit"
-              >
-                {isEditing ? "Update" : "Create"} User Story
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
-            </div>
           </div>
         </form>
       </DialogBody>
     </Dialog>
   );
 }
-

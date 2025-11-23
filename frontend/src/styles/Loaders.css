@@ -1,0 +1,21 @@
+/* Classic Loader */
+
+.classic-loader {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 3px solid #FFF;
+  border-right: 3px solid transparent;
+  box-sizing: border-box;
+  animation: classicRotation 0.9s linear infinite;
+}
+
+@keyframes classicRotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
