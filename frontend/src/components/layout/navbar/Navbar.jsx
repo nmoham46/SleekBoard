@@ -15,12 +15,11 @@ import {
   UserCircleIcon,
   CodeBracketSquareIcon,
   ChevronDownIcon,
-  Cog6ToothIcon,
   InboxArrowDownIcon,
-  LifebuoyIcon,
   Bars2Icon,
   Square3Stack3DIcon,
 } from "@heroicons/react/24/solid";
+import { useUserRole } from "@/context/UserRoleContext";
  
 // profile menu component
 const profileMenuItems = [
@@ -35,21 +34,13 @@ const profileMenuItems = [
   {
     label: "Team Member",
     icon: CodeBracketSquareIcon,
-  },
-  {
-    label: "Help",
-    icon: LifebuoyIcon,
-  },
-  {
-    label: "settings",
-    icon: Cog6ToothIcon,
-  },
+  }
 ];
  
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [userSelectedRole, setUserSelectedRole] = React.useState("Product Owner");
- 
+  const { userSelectedRole, setUserSelectedRole } = useUserRole();
+
   const handleMenuItemClick = (label) => {
     setUserSelectedRole(label);
     setIsMenuOpen(false);
