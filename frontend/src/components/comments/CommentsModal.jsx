@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/context/ToastContext";
 import { useLoader } from "@/context/LoaderContext";
+import { useUserRole } from "@/context/UserRoleContext"; 
 
 import { IoClose } from "react-icons/io5";
 import { FaTrashAlt, FaPencilAlt, FaCheck, FaTimes } from "react-icons/fa";
@@ -28,9 +29,10 @@ const CommentsModal = (props) => {
   const {
     isCommentOpen,
     handleCommentOpen,
-    userStoryId,
-    currentUserName = "Developer",
+    userStoryId
   } = props
+
+  const { userSelectedRole } = useUserRole();
   
   const toast = useToast();
   const { startGlobalLoading, stopGlobalLoading } = useLoader();
@@ -89,7 +91,7 @@ const CommentsModal = (props) => {
       const payload = {
         userStoryId,
         commentText: newComment.trim(),
-        commentedBy: currentUserName,
+        commentedBy: userSelectedRole,
       };
 
       await addComment(payload);
