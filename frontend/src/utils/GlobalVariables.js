@@ -5,29 +5,27 @@ export const ROLES = {
 };
 
 const ROLE_KEY = "sleekboard_user_role";
-const DEFAULT_ROLE = ROLES.PRODUCT_OWNER;
-
 export const ROLE_CHANGED_EVENT = "sleekboard-role-changed";
 
-let currentRole;
+const DEFAULT_ROLE = ROLES.PRODUCT_OWNER;
 
-if (typeof window !== "undefined") {
-  currentRole = window.localStorage.getItem(ROLE_KEY) || DEFAULT_ROLE;
-} else {
-  currentRole = DEFAULT_ROLE;
-}
-
-export const getCurrentRole = () => currentRole;
+// Always fetch latest from localStorage
+export const getCurrentRole = () => {
+  if (typeof window !== "undefined") {
+    return window.localStorage.getItem(ROLE_KEY) || DEFAULT_ROLE;
+  }
+  return DEFAULT_ROLE;
+};
 
 export const setCurrentRole = (role) => {
-  currentRole = role;
-
   if (typeof window !== "undefined") {
     window.localStorage.setItem(ROLE_KEY, role);
-
-    
     window.dispatchEvent(new Event(ROLE_CHANGED_EVENT));
   }
 };
 
-export const isProductOwner = () => currentRole === ROLES.PRODUCT_OWNER;
+// Check role dynamically each time
+export const isProductOwner = () => {
+  const currentRole = getCurrentRole();
+  return currentRole === ROLES.PRODUCT_OWNER;
+};
