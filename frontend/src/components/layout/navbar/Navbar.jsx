@@ -21,6 +21,7 @@ import {
   Bars2Icon,
   Square3Stack3DIcon,
 } from "@heroicons/react/24/solid";
+import { ROLES, setCurrentRole, getCurrentRole } from "../../../utils/GlobalVariables";
  
 // profile menu component
 const profileMenuItems = [
@@ -48,12 +49,24 @@ const profileMenuItems = [
  
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [userSelectedRole, setUserSelectedRole] = React.useState("Product Owner");
+  const [userSelectedRole, setUserSelectedRole] = React.useState(getCurrentRole());
  
   const handleMenuItemClick = (label) => {
+    // 1) Always show what the user clicked in the navbar
     setUserSelectedRole(label);
+
+    // 2) Only change the global role for real roles
+    if (
+      label === ROLES.PRODUCT_OWNER ||
+      label === ROLES.SCRUM_MASTER ||
+      label === ROLES.TEAM_MEMBER
+    ) {
+      setCurrentRole(label);
+    }
+
+    // 3) Close the menu
     setIsMenuOpen(false);
-  };
+};
  
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
