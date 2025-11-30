@@ -10,46 +10,22 @@ import {
   MenuItem,
   IconButton,
 } from "@material-tailwind/react";
+
 import {
-  CubeTransparentIcon,
-  UserCircleIcon,
-  CodeBracketSquareIcon,
   ChevronDownIcon,
-  Cog6ToothIcon,
   InboxArrowDownIcon,
-  LifebuoyIcon,
   Bars2Icon,
   Square3Stack3DIcon,
 } from "@heroicons/react/24/solid";
+
+import { useUserRole } from "@/context/UserRoleContext";
  
-// profile menu component
-const profileMenuItems = [
-  {
-    label: "Product Owner",
-    icon: UserCircleIcon,
-  },
-  {
-    label: "Scrum Master",
-    icon: CubeTransparentIcon,
-  },
-  {
-    label: "Team Member",
-    icon: CodeBracketSquareIcon,
-  },
-  {
-    label: "Help",
-    icon: LifebuoyIcon,
-  },
-  {
-    label: "settings",
-    icon: Cog6ToothIcon,
-  },
-];
+
  
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [userSelectedRole, setUserSelectedRole] = React.useState("Product Owner");
- 
+  const { userSelectedRole, setUserSelectedRole, profileMenuItems } = useUserRole();
+
   const handleMenuItemClick = (label) => {
     setUserSelectedRole(label);
     setIsMenuOpen(false);
