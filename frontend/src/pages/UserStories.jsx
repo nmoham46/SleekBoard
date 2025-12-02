@@ -5,12 +5,14 @@ import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
 import { useToast } from '@/context/ToastContext';
 
+import QualityCheck from "@/components/quality-check/QualityCheck";
+
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
-import { Button } from "@material-tailwind/react";
+import { Button, Checkbox, Chip } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
 
@@ -124,8 +126,16 @@ const UserStories = () => {
                     <div className="text-center sm:text-start sm:col-span-3">
                       <span>{storyData.title}</span>
                     </div>
+                    <div className="flex items-center justify-center gap-3 justify-self-end">
 
-                    <div className="flex items-center justify-center gap-4 justify-self-end">
+                      <QualityCheck selectedQualities={{
+        correct: true,
+        unambiguous: true,
+        complete: true,
+        consistent: false,
+        verifiable: true,
+        modifiable: true,
+    }} />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
