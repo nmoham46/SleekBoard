@@ -17,7 +17,7 @@ const RolePickerOverlay = () => {
     isOverlayOn && (
       <div className="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-80 flex justify-center items-center z-[99999]"> 
         <div className="container">
-          <div className="grid grid-cols-1 justify-center items-center gap-12 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 justify-center items-center gap-12 mx-4 md:grid-cols-2 lg:grid-cols-3">
             {profileMenuItems.map(({ label, icon }) => (
               <Card key={label} onClick={() => handleCardClick(label)}
                     className="w-96k text-tPrimary font-primary items-center transition-transform duration-200 transform hover:scale-110 hover:bg-opacity-85 cursor-pointer">
