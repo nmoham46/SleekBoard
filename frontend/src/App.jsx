@@ -1,6 +1,7 @@
 import "@/styles/App.css";
 
 import UserStories from "@/pages/UserStories";
+import RolePickerOverlay from "@/components/layout/role-picker-overlay/RolePickerOverlay";
 import ToastContainer from "@/components/common/ToastContainer";
 import GlobalLoader from "@/components/layout/loaders/GlobalLoader";
 
@@ -20,6 +21,7 @@ function App() {
             <UserStories />
           </div>
 
+          <RolePickerOverlay />
           <ToastContainer />
 
           <GlobalLoader />
