@@ -4,6 +4,7 @@ import UserStoryForm from "@/components/user-stories/UserStoryForm";
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
 import { useToast } from '@/context/ToastContext';
+import { useUserRole } from "@/context/UserRoleContext";
 
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
@@ -17,6 +18,8 @@ import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStorie
 
 const UserStories = () => {
   const toast = useToast();
+  const { isProductOwner } = useUserRole();
+
   const {
     startGlobalLoading,
     stopGlobalLoading
@@ -112,10 +115,12 @@ const UserStories = () => {
           <div className="flex flex-col w-full max-w-2xl">
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
-            <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
-              Create
-              <IoMdAdd className="text-h6" />
-            </Button>
+            {isProductOwner && (
+              <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
+                Create
+                <IoMdAdd className="text-h6" />
+              </Button>
+            )}
 
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
@@ -130,14 +135,23 @@ const UserStories = () => {
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
 
-                      <FaPencilAlt className="cursor-pointer"
-                        onClick={() => handleEditClick(storyData)} />
+                      <BiSolidCommentDetail
+                        className="cursor-pointer text-h6"
+                        onClick={() => handleCommentClick(storyData._id)}
+                      />
 
-                      <BiSolidCommentDetail className="cursor-pointer text-h6"
-                        onClick={() => handleCommentClick(storyData._id)} />
-
-                      <FaTrashAlt className="text-red-500 cursor-pointer"
-                        onClick={() => deleteStory(storyData._id)} />
+                      {isProductOwner && (
+                        <>
+                          <FaPencilAlt
+                            className="cursor-pointer"
+                            onClick={() => handleEditClick(storyData)}
+                          />
+                          <FaTrashAlt
+                            className="text-red-500 cursor-pointer"
+                            onClick={() => deleteStory(storyData._id)}
+                          />
+                        </>
+                      )}
 
                     </div>
                   </div>

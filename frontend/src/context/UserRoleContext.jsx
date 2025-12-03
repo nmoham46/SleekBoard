@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
 import {
   CubeTransparentIcon,
   UserCircleIcon,
@@ -7,17 +7,23 @@ import {
 
 const UserRoleContext = createContext(null);
 
+const roles = {
+  productOwner: "Product Owner",
+  scrumMaster: "Scrum Master",
+  teamMember: "Team Member"
+}
+
 const profileMenuItems = [
   {
-    label: "Product Owner",
+    label: roles.productOwner,
     icon: UserCircleIcon,
   },
   {
-    label: "Scrum Master",
+    label: roles.scrumMaster,
     icon: CubeTransparentIcon,
   },
   {
-    label: "Team Member",
+    label: roles.teamMember,
     icon: CodeBracketSquareIcon,
   }
 ];
@@ -32,13 +38,18 @@ export const useUserRole = () => {
 };
 
 export const UserRoleProvider = ({ children }) => {
-  const [userSelectedRole, setUserSelectedRole] = useState(profileMenuItems[0].label);
+  const [userSelectedRole, setUserSelectedRole] = useState(roles.productOwner);
+
+  const isProductOwner = useMemo(() => {
+    return userSelectedRole === roles.productOwner
+  }, [userSelectedRole])
 
   return (
     <UserRoleContext.Provider value={{
       userSelectedRole,
       setUserSelectedRole,
-      profileMenuItems
+      profileMenuItems,
+      isProductOwner
     }}>
       {children}
     </UserRoleContext.Provider>
