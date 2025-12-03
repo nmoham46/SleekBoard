@@ -28,7 +28,7 @@ function ProfileMenu() {
         <Button
           variant="text"
           color="blue-gray"
-          className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+          className="flex items-center text-tPrimary gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
         >
           <Typography
             className="hidden lg:inline-flex lg:mr-2 normal-case"
@@ -45,7 +45,7 @@ function ProfileMenu() {
         </Button>
       </MenuHandler>
 
-      <MenuList className="p-1">
+      <MenuList className="p-1 text-tPrimary">
         {profileMenuItems.map(({ label, icon }, key) => {
           return (
             <MenuItem
