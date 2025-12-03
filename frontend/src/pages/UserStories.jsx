@@ -18,8 +18,7 @@ import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStorie
 
 const UserStories = () => {
   const toast = useToast();
-  const { userSelectedRole } = useUserRole();
-  const isProductOwner = userSelectedRole === "Product Owner";
+  const { isProductOwner } = useUserRole();
 
   const {
     startGlobalLoading,
@@ -117,11 +116,11 @@ const UserStories = () => {
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
             {isProductOwner && (
-            <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
-              Create
-              <IoMdAdd className="text-h6" />
-            </Button>
-          )}
+              <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
+                Create
+                <IoMdAdd className="text-h6" />
+              </Button>
+            )}
 
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
