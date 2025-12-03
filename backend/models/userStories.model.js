@@ -1,6 +1,18 @@
 import mongoose, { model } from "mongoose";
 const { Schema } = mongoose;
 
+const QualityIndicatorSchema = new Schema(
+  {
+    correct:      { type: Boolean, default: false },
+    unambiguous:  { type: Boolean, default: false },
+    complete:     { type: Boolean, default: false },
+    consistent:   { type: Boolean, default: false },
+    verifiable:   { type: Boolean, default: false },
+    modifiable:   { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
 const UserStorySchema = new Schema(
   {
     title: { type: String, required: true },
@@ -10,6 +22,7 @@ const UserStorySchema = new Schema(
     storyPoint: { type: Number, required: true, enum: [1, 2, 3, 5, 8, 13, 21, 34, 55] },
     assignedTo: { type: String  },
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    qualityIndicators: { type: QualityIndicatorSchema, default: () => ({}),},
   },
   { timestamps: true }
 );
