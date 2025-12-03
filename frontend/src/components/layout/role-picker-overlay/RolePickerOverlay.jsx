@@ -3,10 +3,15 @@ import { useUserRole } from "@/context/UserRoleContext";
 import { createElement, useState } from "react";
 
 const RolePickerOverlay = () => {
-  const { profileMenuItems } = useUserRole()
+  const { profileMenuItems, setUserSelectedRole } = useUserRole()
   const [isOverlayOn, setIsOverlayOn] = useState(true)
 
   const toggleOverlay = () => setIsOverlayOn(!isOverlayOn)
+
+  const handleCardClick = (selectedRole) => {
+    setUserSelectedRole(selectedRole)
+    toggleOverlay()
+  }
 
   return (
     isOverlayOn && (
@@ -14,9 +19,9 @@ const RolePickerOverlay = () => {
         <div className="container">
           <div className="grid grid-cols-3 justify-center items-center">
             {profileMenuItems.map(({ label, icon }) => (
-              <Card onClick={toggleOverlay}
+              <Card key={label} onClick={() => handleCardClick(label)}
                     className="w-96 text-tPrimary font-primary items-center transition-transform duration-200 transform hover:scale-110 hover:bg-opacity-85 cursor-pointer">
-                      
+
                 <CardBody className="flex flex-col items-center gap-4">
                   {createElement(icon, {
                     className: `w-14`,
