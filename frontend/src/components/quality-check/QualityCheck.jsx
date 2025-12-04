@@ -64,7 +64,7 @@ export default function QualityCheck(props) {
                             variant="text"
                             onClick={() => handleClick(quality.id)}
                             disabled={!handleQualityChange}
-                            className={isSelected ? "opacity-100 rounded-full" : "opacity-50 rounded-full"}
+                            className={isSelected ? "opacity-100 rounded-full" : "opacity-30 rounded-full"}
                             onMouseEnter={() => handleMouseEnter(quality.id)}
                             onMouseLeave={() => handleMouseLeave(quality.id)}
                         >
