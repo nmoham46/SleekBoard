@@ -7,12 +7,13 @@ import { useToast } from '@/context/ToastContext';
 
 import QualityCheck from "@/components/quality-check/QualityCheck";
 
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaRulerHorizontal } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
-import { Button, Checkbox, Chip } from "@material-tailwind/react";
+
+import { Button, Popover, PopoverHandler, PopoverContent, IconButton } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
 
@@ -36,6 +37,17 @@ const UserStories = () => {
   // Used for comments opened and process the rest in comment modal
   const [isCommentOpen, setIsCommentOpen] = useState(false); 
   const [selectedStoryId, setSelectedStoryId] = useState(null);
+
+  const [selectedQualityCheck, setSelectedQualityCheck] = useState({
+    correct: false,
+    unambiguous: true,
+    complete: true,
+    consistent: false,
+    verifiable: true,
+    modifiable: true,
+});
+
+
   
   // ------------------------------------------------------
 
@@ -128,14 +140,13 @@ const UserStories = () => {
                     </div>
                     <div className="flex items-center justify-center gap-3 justify-self-end">
 
-                      <QualityCheck selectedQualities={{
-        correct: true,
-        unambiguous: true,
-        complete: true,
-        consistent: false,
-        verifiable: true,
-        modifiable: true,
-    }} />
+                    <QualityCheck 
+                      selectedQualities={selectedQualityCheck} 
+                      handleQualityChange={(id, checked) => {
+                        setSelectedQualityCheck(prev => ({ ...prev, [id]: checked }));
+                      }}
+                    />
+
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
