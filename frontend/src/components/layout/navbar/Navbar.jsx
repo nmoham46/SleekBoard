@@ -21,6 +21,8 @@ import {
   Bars2Icon,
   Square3Stack3DIcon,
 } from "@heroicons/react/24/solid";
+
+import NavBarLogo from "../../../assets/logos/svg/PRIMARY_LOGO.svg";
  
 // profile menu component
 const profileMenuItems = [
@@ -153,13 +155,13 @@ export function Navigationbar() {
   return (
     <Navbar className="mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
-        <Typography
-          as="a"
-          href="#"
-          className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
-        >
-          SleekBoard
-        </Typography>
+        <a href="#" className="mr-4 ml-2 cursor-pointer py-1.5 flex items-center">
+          <img
+            src={NavBarLogo}
+            alt="SleekBoard_Logo"
+            className="h-8 w-auto"
+          />
+        </a>
         <div className="hidden lg:block">
           <NavList />
         </div>
