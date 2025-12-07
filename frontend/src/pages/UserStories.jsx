@@ -1,22 +1,21 @@
 import CommentsModal from "@/components/comments/CommentsModal";
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
+import QualityCheck from "@/components/quality-check/QualityCheck";
 
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
 import { useToast } from '@/context/ToastContext';
 
-import QualityCheck from "@/components/quality-check/QualityCheck";
-
-import { FaPencilAlt, FaRulerHorizontal } from "react-icons/fa";
+import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 
-import { Button, Popover, PopoverHandler, PopoverContent, IconButton } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 
-import { fetchAllUserStories, deleteUserStory } from "@/services/apis/userStories";
-import { updateUserStoryQuality } from "@/services/apis/userStories"; 
+import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
+import { updateUserStoryQuality } from "@/services/apis/UserStories"; 
 
 
 const UserStories = () => {
@@ -27,29 +26,6 @@ const UserStories = () => {
   } = useLoader()
 
   // ------------------------------------------------------
-
-  const toggleQuality = async (story, key) => {
-  const currentQuality = story.qualityIndicators || {};
-
-  const updatedQuality = {
-    ...currentQuality,
-    [key]: !currentQuality[key],
-  };
-
-  try {
-    startGlobalLoading();
-    await updateUserStoryQuality(story._id, updatedQuality);
-    await initUserStories();              
-    toast.success("Quality updated!");
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to update quality");
-  } finally {
-    stopGlobalLoading();
-  }
-};
-
-
 
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -123,6 +99,31 @@ const UserStories = () => {
       stopGlobalLoading()
     }
   }
+
+  const toggleQuality = async (story, key) => {
+    const currentQuality = story.qualityIndicators || {};
+
+    const updatedQuality = {
+      ...currentQuality,
+      [key]: !currentQuality[key],
+    };
+
+    try {
+      startGlobalLoading();
+
+      await updateUserStoryQuality(story._id, updatedQuality);
+      await initUserStories();  
+
+      toast.success("Quality updated!");
+    } 
+    catch (error) {
+      console.error(error);
+      toast.error("Failed to update quality");
+    } 
+    finally {
+      stopGlobalLoading();
+    }
+  };
 
   // ------------------------------------------------------
 
