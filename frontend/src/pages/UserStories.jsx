@@ -1,5 +1,6 @@
 import CommentsModal from "@/components/comments/CommentsModal";
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
+import ExportToJiraForm from "@/components/user-stories/ExportToJiraForm";
 
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
@@ -10,10 +11,11 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
-import { Button } from "@material-tailwind/react";
+import { Button, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const UserStories = () => {
   const toast = useToast();
@@ -34,6 +36,9 @@ const UserStories = () => {
   // Used for comments opened and process the rest in comment modal
   const [isCommentOpen, setIsCommentOpen] = useState(false); 
   const [selectedStoryId, setSelectedStoryId] = useState(null);
+
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [jiraJson, setJiraJson] = useState("");
   
   // ------------------------------------------------------
 
@@ -64,6 +69,24 @@ const UserStories = () => {
   const handleCommentClick = async (id) => {
     handleCommentOpen()
     setSelectedStoryId(id);
+  };
+
+  const handleExportClick = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/exports/jira`);
+      if (!response.ok) {
+        console.error("Failed to fetch Jira export JSON");
+        toast.error("Error fetching Jira export JSON");
+        return;
+      }
+      const data = await response.json();
+      const prettyJson = JSON.stringify(data, null, 2);
+      setJiraJson(prettyJson);
+      setIsExportOpen(true);
+    } catch (error) {
+      console.error("Error fetching Jira export JSON:", error);
+      toast.error("Error fetching Jira export JSON");
+    }
   };
 
   const initUserStories = async () => {
@@ -112,10 +135,21 @@ const UserStories = () => {
           <div className="flex flex-col w-full max-w-2xl">
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
-            <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
-              Create
-              <IoMdAdd className="text-h6" />
-            </Button>
+            <div className="flex items-center self-center gap-3 mb-6 md:self-start">
+              <Button
+                onClick={handleCreateClick}
+                className="flex items-center gap-3"
+              >
+                Create
+                <IoMdAdd className="text-h6" />
+              </Button>
+              <Button
+                onClick={handleExportClick}
+                className="flex items-center gap-3"
+              >
+                Export to Jira
+              </Button>
+            </div>
 
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
@@ -162,6 +196,18 @@ const UserStories = () => {
         initUserStories={initUserStories}
         viewOnly={viewOnly}
         selectedStory={selectedStory} />
+
+      <Dialog open={isExportOpen} handler={setIsExportOpen} size="lg">
+        <DialogHeader>Export to Jira</DialogHeader>
+        <DialogBody divider>
+          <ExportToJiraForm jsonText={jiraJson} />
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="text" onClick={() => setIsExportOpen(false)}>
+            Close
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </main>
   );
 };
