@@ -5,6 +5,7 @@ import cors from "cors";
 
 import userStoriesRoutes from "./routes/userStories.route.js";
 import commentsRoutes from "./routes/comments.route.js";
+import exportRoutes from "./routes/export.routes.js";
 
 dotenv.config();
 const app = express();
@@ -29,6 +30,8 @@ app.use("/api/v1/user-stories", userStoriesRoutes);
 // User stories comments routes
 app.use("/api/v1/comments", commentsRoutes);
 
+// Exporting JSON data routes
+app.use("/api/exports", exportRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5050;

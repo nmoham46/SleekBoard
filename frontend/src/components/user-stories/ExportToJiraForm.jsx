@@ -9,25 +9,8 @@ const ExportToJiraForm = ({ jsonText }) =>
     const displayJson =
       jsonText && jsonText.trim().length > 0
         ? jsonText
-        : `{
-  "projects": [
-    {
-      "name": "SleekBoard Export",
-      "key": "SLEEK",
-      "description": "Exported user stories from SleekBoard",
-      "work items": [
-        {
-          "summary": "Test user story",
-          "description": "Example description for Jira import from SleekBoard.",
-          "workType": "Story",
-          "status": "TO DO",
-          "priority": "Medium",
-          "externalId": "1"
-        }
-      ]
-    }
-  ]
-}`;
+        : `// No Jira export data loaded.
+  // Click "Export" to fetch JSON from the backend.`;
 
     const handleCopy = async () => 
       {
@@ -43,21 +26,25 @@ const ExportToJiraForm = ({ jsonText }) =>
           }
       };
 
-    const handleDownload = () => {
-      try {
-        const blob = new Blob([displayJson], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "sleekboard-jira-export.json";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Failed to download JSON file", error);
-      }
-    };
+    const handleDownload = () => 
+      {
+        try 
+          {
+            const blob = new Blob([displayJson], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "sleekboard-jira-export.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          } 
+        catch (error) 
+          {
+            console.error("Failed to download JSON file", error);
+          }
+      };
 
     return (
       <div className="relative">
