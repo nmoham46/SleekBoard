@@ -5,12 +5,15 @@ import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
 import { useToast } from '@/context/ToastContext';
 
-import { FaPencilAlt } from "react-icons/fa";
+import QualityCheck from "@/components/quality-check/QualityCheck";
+
+import { FaPencilAlt, FaRulerHorizontal } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
-import { Button } from "@material-tailwind/react";
+
+import { Button, Popover, PopoverHandler, PopoverContent, IconButton } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/userStories";
 import { updateUserStoryQuality } from "@/services/apis/userStories"; 
@@ -50,8 +53,6 @@ const UserStories = () => {
   const [viewOnly, setViewOnly] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null)
 
-  // Comments modal state
-  // Used for comments opened and process the rest in comment modal
   const [isCommentOpen, setIsCommentOpen] = useState(false); 
   const [selectedStoryId, setSelectedStoryId] = useState(null);
   
@@ -145,10 +146,10 @@ const UserStories = () => {
                       <span>{storyData.title}</span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-4 justify-self-end">
+                    <div className="flex items-center justify-center gap-3 justify-self-end">
+                      <QualityCheck />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
-
 
                       <FaPencilAlt className="cursor-pointer"
                         onClick={() => handleEditClick(storyData)} />
@@ -158,7 +159,6 @@ const UserStories = () => {
 
                       <FaTrashAlt className="text-red-500 cursor-pointer"
                         onClick={() => deleteStory(storyData._id)} />
-
                     </div>
                   </div>
                 ))}
