@@ -98,4 +98,24 @@ export const getUserStoryByID = async (id) => {
     console.error("Error:", error);
     throw error;
   }
+}
+
+export const updateUserStoryQuality = async (id, qualityData) => {
+  const path = `/api/v1/user-stories/quality/${id}`;
+
+  const options = {
+    method: "PATCH",
+    url: path,
+    data: qualityData
+  };
+
+  try {
+    const res = await Http(options);
+    return res.data;
+  } catch (error) {
+    console.error("Failure in updateUserStoryQuality api call");
+    console.error("Error:", error);
+    throw error;
+  }
 };
+
