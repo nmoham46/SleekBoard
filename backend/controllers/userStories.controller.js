@@ -81,6 +81,7 @@ export async function updateQualityIndicators(req, res){
 
     res.status(StatusCodes.OK).json(story);
   } catch (err) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
+    console.error(err)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Something went wrong, please try again later" });
   }
 };
