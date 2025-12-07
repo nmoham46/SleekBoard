@@ -12,7 +12,8 @@ import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { Button } from "@material-tailwind/react";
 
-import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
+import { fetchAllUserStories, deleteUserStory } from "@/services/apis/userStories";
+import { updateUserStoryQuality } from "@/services/apis/userStories"; 
 
 
 const UserStories = () => {
@@ -23,6 +24,26 @@ const UserStories = () => {
   } = useLoader()
 
   // ------------------------------------------------------
+
+  const toggleQuality = async (story, key) => {
+  const updatedQuality = {
+    ...story.quality,
+    [key]: !story.quality[key],
+  };
+
+  try {
+    startGlobalLoading();
+    await updateUserStoryQuality(story._id, updatedQuality);
+    await initUserStories();
+    toast.success("Quality updated!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to update quality");
+  } finally {
+    stopGlobalLoading();
+  }
+};
+
 
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
