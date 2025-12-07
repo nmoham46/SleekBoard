@@ -11,23 +11,21 @@ const QUALITIES = [
     { id: 'modifiable', label: 'Modifiable', icon: FaPencilAlt, description: 'The user story can be easily updated or changed' },
   ];
 
-export default function QualityCheck(props) {
-    const { selectedQualities = {
-        correct: true,
-        unambiguous: true,
-        complete: true,
-        consistent: true,
-        verifiable: true,
-        modifiable: true,
-    }, handleQualityChange } = props;
+export default function QualityCheck() {
+    const [selectedQualities, setSelectedQualities] = useState({
+        correct: false,
+        unambiguous: false,
+        complete: false,
+        consistent: false,
+        verifiable: false,
+        modifiable: false
+    });
 
     const [showTooltip, setShowTooltip] = useState({});
     const [tooltipTimeout, setTooltipTimeout] = useState({});
 
     const handleClick = (qualityId) => {
-        if (handleQualityChange) {
-            handleQualityChange(qualityId, !selectedQualities[qualityId]);
-        }
+        setSelectedQualities(prev => ({ ...prev, [qualityId]: !prev[qualityId] })) 
     };
 
     const handleMouseEnter = (qualityId) => {
@@ -63,7 +61,6 @@ export default function QualityCheck(props) {
                         <IconButton
                             variant="text"
                             onClick={() => handleClick(quality.id)}
-                            disabled={!handleQualityChange}
                             className={isSelected ? "opacity-100 rounded-full" : "opacity-30 rounded-full"}
                             onMouseEnter={() => handleMouseEnter(quality.id)}
                             onMouseLeave={() => handleMouseLeave(quality.id)}

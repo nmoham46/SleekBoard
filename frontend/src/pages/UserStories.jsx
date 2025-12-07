@@ -33,21 +33,8 @@ const UserStories = () => {
   const [viewOnly, setViewOnly] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null)
 
-  // Comments modal state
-  // Used for comments opened and process the rest in comment modal
   const [isCommentOpen, setIsCommentOpen] = useState(false); 
   const [selectedStoryId, setSelectedStoryId] = useState(null);
-
-  const [selectedQualityCheck, setSelectedQualityCheck] = useState({
-    correct: false,
-    unambiguous: true,
-    complete: true,
-    consistent: false,
-    verifiable: true,
-    modifiable: true,
-});
-
-
   
   // ------------------------------------------------------
 
@@ -138,18 +125,11 @@ const UserStories = () => {
                     <div className="text-center sm:text-start sm:col-span-3">
                       <span>{storyData.title}</span>
                     </div>
+
                     <div className="flex items-center justify-center gap-3 justify-self-end">
-
-                    <QualityCheck 
-                      selectedQualities={selectedQualityCheck} 
-                      handleQualityChange={(id, checked) => {
-                        setSelectedQualityCheck(prev => ({ ...prev, [id]: checked }));
-                      }}
-                    />
-
+                      <QualityCheck />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
-
 
                       <FaPencilAlt className="cursor-pointer"
                         onClick={() => handleEditClick(storyData)} />
@@ -159,7 +139,6 @@ const UserStories = () => {
 
                       <FaTrashAlt className="text-red-500 cursor-pointer"
                         onClick={() => deleteStory(storyData._id)} />
-
                     </div>
                   </div>
                 ))}
