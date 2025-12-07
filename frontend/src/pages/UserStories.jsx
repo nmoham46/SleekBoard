@@ -27,8 +27,7 @@ const UserStories = () => {
 
   const toggleQuality = async (story, key) => {
   const updatedQuality = {
-    ...story.quality,
-    [key]: !story.quality[key],
+    [key]: !story.quality[key]
   };
 
   try {
