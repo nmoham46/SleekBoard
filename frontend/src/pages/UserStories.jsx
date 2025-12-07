@@ -29,14 +29,17 @@ const UserStories = () => {
   // ------------------------------------------------------
 
   const toggleQuality = async (story, key) => {
+  const currentQuality = story.qualityIndicators || {};
+
   const updatedQuality = {
-    [key]: !story.quality[key]
+    ...currentQuality,
+    [key]: !currentQuality[key],
   };
 
   try {
     startGlobalLoading();
     await updateUserStoryQuality(story._id, updatedQuality);
-    await initUserStories();
+    await initUserStories();              
     toast.success("Quality updated!");
   } catch (error) {
     console.error(error);
@@ -45,6 +48,7 @@ const UserStories = () => {
     stopGlobalLoading();
   }
 };
+
 
 
   const [stories, setStories] = useState([])
@@ -147,7 +151,10 @@ const UserStories = () => {
                     </div>
 
                     <div className="flex items-center justify-center gap-3 justify-self-end">
-                      <QualityCheck />
+                      <QualityCheck
+                        quality={storyData.qualityIndicators}
+                        onToggle={(key) => toggleQuality(storyData, key)}
+                      />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
