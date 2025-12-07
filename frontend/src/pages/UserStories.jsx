@@ -12,6 +12,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
+import { FaDownload } from "react-icons/fa";
 
 import { Button, Popover, PopoverHandler, PopoverContent, IconButton } from "@material-tailwind/react";
 
@@ -40,6 +41,11 @@ const UserStories = () => {
 
   const handleFormOpen = () => setIsFormOpen(!isFormOpen)
   const handleCommentOpen = () => setIsCommentOpen(!isCommentOpen)
+
+  const handleExport = () => {
+    toast.success("User stories copied to your clipboard");
+
+  }
 
   const handleCreateClick = () => {
     setIsEditing(false);
@@ -113,10 +119,15 @@ const UserStories = () => {
           <div className="flex flex-col w-full max-w-2xl">
             <h4 className="text-h1 font-semibold mb-8 text-center">User Stories</h4>
 
-            <Button onClick={handleCreateClick} className="flex items-center self-center gap-3 mb-6 md:self-start">
-              Create
-              <IoMdAdd className="text-h6" />
-            </Button>
+            <div className="flex items-center self-center gap-3 mb-6 md:self-start">
+              <Button onClick={handleCreateClick} className="flex items-center gap-3">
+                Create
+                <IoMdAdd className="text-h6" />
+              </Button>
+              <IconButton className="flex items-center justify-center" onClick={handleExport}>
+                <FaDownload className="text-h6" />
+              </IconButton>
+            </div>
 
             {stories.length ? (
               <div className="flex flex-col gap-5 h-[30rem] overflow-auto md:h-[20rem]">
