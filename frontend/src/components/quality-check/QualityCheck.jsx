@@ -9,24 +9,12 @@ const QUALITIES = [
     { id: 'consistent', label: 'Consistent', icon: FaBalanceScale, description: 'The user story aligns with other project requirements' },
     { id: 'verifiable', label: 'Verifiable', icon: FaEye, description: 'The user story can be tested and validated' },
     { id: 'modifiable', label: 'Modifiable', icon: FaPencilAlt, description: 'The user story can be easily updated or changed' },
-  ];
+];
 
-export default function QualityCheck() {
-    const [selectedQualities, setSelectedQualities] = useState({
-        correct: false,
-        unambiguous: false,
-        complete: false,
-        consistent: false,
-        verifiable: false,
-        modifiable: false
-    });
+export default function QualityCheck({ quality, onToggle }) {
 
     const [showTooltip, setShowTooltip] = useState({});
     const [tooltipTimeout, setTooltipTimeout] = useState({});
-
-    const handleClick = (qualityId) => {
-        setSelectedQualities(prev => ({ ...prev, [qualityId]: !prev[qualityId] })) 
-    };
 
     const handleMouseEnter = (qualityId) => {
         const timeout = setTimeout(() => {
@@ -40,30 +28,26 @@ export default function QualityCheck() {
             clearTimeout(tooltipTimeout[qualityId]);
         }
         setShowTooltip(prev => ({ ...prev, [qualityId]: false }));
-        setTooltipTimeout(prev => {
-            const newState = { ...prev };
-            delete newState[qualityId];
-            return newState;
-        });
     };
 
   return (
     <div className="flex items-center gap-0 px-0.5 py-0.5 rounded-full shadow-sm bg-secondary">
-        {QUALITIES.map((quality) => {
-            const IconComponent = quality.icon;
-            const isSelected = selectedQualities[quality.id];
+        {QUALITIES.map((q) => {
+            const IconComponent = q.icon;
+            const isSelected = quality?.[q.id] ?? false;
+
             return (
-                <div key={quality.id} className="-mx-1 relative">
+                <div key={q.id} className="-mx-1 relative">
                     <Tooltip 
-                        content={quality.label + ": " + quality.description}
-                        open={showTooltip[quality.id] || false}
+                        content={q.label + ": " + q.description}
+                        open={showTooltip[q.id] || false}
                     >
                         <IconButton
                             variant="text"
-                            onClick={() => handleClick(quality.id)}
+                            onClick={() => onToggle(q.id)}
                             className={isSelected ? "opacity-100 rounded-full" : "opacity-30 rounded-full"}
-                            onMouseEnter={() => handleMouseEnter(quality.id)}
-                            onMouseLeave={() => handleMouseLeave(quality.id)}
+                            onMouseEnter={() => handleMouseEnter(q.id)}
+                            onMouseLeave={() => handleMouseLeave(q.id)}
                         >
                             <IconComponent />
                         </IconButton>
@@ -72,5 +56,5 @@ export default function QualityCheck() {
             );
         })}
     </div>
-  )
+  );
 }
