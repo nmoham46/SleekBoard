@@ -9,10 +9,6 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
 } from "@material-tailwind/react";
 import {
   CubeTransparentIcon,
@@ -24,11 +20,9 @@ import {
   LifebuoyIcon,
   Bars2Icon,
   Square3Stack3DIcon,
-  ArrowUpOnSquareIcon,
 } from "@heroicons/react/24/solid";
 
 import NavBarLogo from "@/assets/logos/svg/PRIMARY_LOGO.svg";
-import ExportToJiraForm from "@/components/user-stories/ExportToJiraForm";
  
 // profile menu component
 const profileMenuItems = [
@@ -122,60 +116,35 @@ const navListItems = [
     label: "Create User Story",
     icon: InboxArrowDownIcon,
   },
-  {
-    label: "Export to Jira",
-    icon: ArrowUpOnSquareIcon,
-    action: "exportToJira"
-  },
 ];
  
-function NavList({ onNavItemClick }) 
-  {
-    const handleClick = (action) => 
-        {
-          if (onNavItemClick) 
-            {
-              onNavItemClick(action);
-            }
-        };
-
-    return (
-      <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-        {navListItems.map(({ label, icon, action }, key) => (
-          <Typography
-            key={label}
-            as="a"
-            href="#"
-            variant="small"
-            color="gray"
-            className="font-medium text-blue-gray-500"
-          >
-            <MenuItem onClick={()=>handleClick(action)} className="flex items-center gap-2 lg:rounded-full">
-              {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
-              <span className="text-gray-900"> {label}</span>
-            </MenuItem>
-          </Typography>
-        ))}
-      </ul>
-    );
-  }
+function NavList() {
+  return (
+    <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
+      {navListItems.map(({ label, icon }, key) => (
+        <Typography
+          key={label}
+          as="a"
+          href="#"
+          variant="small"
+          color="gray"
+          className="font-medium text-blue-gray-500"
+        >
+          <MenuItem className="flex items-center gap-2 lg:rounded-full">
+            {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
+            <span className="text-gray-900"> {label}</span>
+          </MenuItem>
+        </Typography>
+      ))}
+    </ul>
+  );
+}
  
 export function Navigationbar() {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
-  const [isExportOpen, setIsExportOpen] = React.useState(false);
  
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
-  const handleNavItemClick = (action) =>
-    {
-      if(action === "exportToJira")
-        {
-          setIsExportOpen(true);
-        }
-    };
-
-  const handleExportClose = () => setIsExportOpen(false);
- 
   React.useEffect(() => {
     window.addEventListener(
       "resize",
@@ -194,7 +163,7 @@ export function Navigationbar() {
           />
         </a>
         <div className="hidden lg:block">
-          <NavList onNavItemClick={handleNavItemClick} />
+          <NavList />
         </div>
         <IconButton
           size="sm"
@@ -209,19 +178,8 @@ export function Navigationbar() {
         <ProfileMenu />
       </div>
       <MobileNav open={isNavOpen} className="overflow-scroll">
-        <NavList onNavItemClick={handleNavItemClick} />
+        <NavList />
       </MobileNav>
-            <Dialog open={isExportOpen} handler={setIsExportOpen} size="lg">
-        <DialogHeader>Export to Jira</DialogHeader>
-        <DialogBody divider>
-          <ExportToJiraForm />
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="text" onClick={handleExportClose}>
-            Close
-          </Button>
-        </DialogFooter>
-      </Dialog>
     </Navbar>
   );
 }
