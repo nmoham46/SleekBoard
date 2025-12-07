@@ -15,7 +15,8 @@ import { BiSolidCommentDetail } from "react-icons/bi";
 
 import { Button, Popover, PopoverHandler, PopoverContent, IconButton } from "@material-tailwind/react";
 
-import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
+import { fetchAllUserStories, deleteUserStory } from "@/services/apis/userStories";
+import { updateUserStoryQuality } from "@/services/apis/userStories"; 
 
 
 const UserStories = () => {
@@ -26,6 +27,29 @@ const UserStories = () => {
   } = useLoader()
 
   // ------------------------------------------------------
+
+  const toggleQuality = async (story, key) => {
+  const currentQuality = story.qualityIndicators || {};
+
+  const updatedQuality = {
+    ...currentQuality,
+    [key]: !currentQuality[key],
+  };
+
+  try {
+    startGlobalLoading();
+    await updateUserStoryQuality(story._id, updatedQuality);
+    await initUserStories();              
+    toast.success("Quality updated!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to update quality");
+  } finally {
+    stopGlobalLoading();
+  }
+};
+
+
 
   const [stories, setStories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -127,7 +151,10 @@ const UserStories = () => {
                     </div>
 
                     <div className="flex items-center justify-center gap-3 justify-self-end">
-                      <QualityCheck />
+                      <QualityCheck
+                        quality={storyData.qualityIndicators}
+                        onToggle={(key) => toggleQuality(storyData, key)}
+                      />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
