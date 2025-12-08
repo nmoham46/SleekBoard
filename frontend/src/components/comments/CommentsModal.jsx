@@ -12,7 +12,7 @@ import {
   addComment,
   updateComment,
   deleteComment,
-} from "@/services/apis/comments";
+} from "@/services/apis/Comments";
 
 import {
   Textarea,

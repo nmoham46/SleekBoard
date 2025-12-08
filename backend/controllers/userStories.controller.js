@@ -1,6 +1,5 @@
 import UserStory from "../models/userStories.model.js";
 import { StatusCodes } from "http-status-codes";
-import Comment from "../models/comments.model.js";
 
 
 export async function createUserStories(req, res) {
@@ -62,3 +61,27 @@ export async function listUserStories(req, res) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: e.message });
   }
 }
+
+export async function updateQualityIndicators(req, res){
+  try {
+    const story = await UserStory.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          "qualityIndicators.correct": req.body.correct,
+          "qualityIndicators.unambiguous": req.body.unambiguous,
+          "qualityIndicators.complete": req.body.complete,
+          "qualityIndicators.consistent": req.body.consistent,
+          "qualityIndicators.verifiable": req.body.verifiable,
+          "qualityIndicators.modifiable": req.body.modifiable,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(StatusCodes.OK).json(story);
+  } catch (err) {
+    console.error(err)
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Something went wrong, please try again later" });
+  }
+};

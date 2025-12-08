@@ -1,5 +1,6 @@
 import CommentsModal from "@/components/comments/CommentsModal";
 import UserStoryForm from "@/components/user-stories/UserStoryForm";
+import QualityCheck from "@/components/quality-check/QualityCheck";
 
 import { useState, useEffect } from "react";
 import { useLoader } from "@/context/LoaderContext"
@@ -11,9 +12,11 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { BiSolidCommentDetail } from "react-icons/bi";
+
 import { Button } from "@material-tailwind/react";
 
 import { fetchAllUserStories, deleteUserStory } from "@/services/apis/UserStories";
+import { updateUserStoryQuality } from "@/services/apis/UserStories"; 
 
 
 const UserStories = () => {
@@ -33,8 +36,6 @@ const UserStories = () => {
   const [viewOnly, setViewOnly] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null)
 
-  // Comments modal state
-  // Used for comments opened and process the rest in comment modal
   const [isCommentOpen, setIsCommentOpen] = useState(false); 
   const [selectedStoryId, setSelectedStoryId] = useState(null);
   
@@ -102,6 +103,31 @@ const UserStories = () => {
     }
   }
 
+  const toggleQuality = async (story, key) => {
+    const currentQuality = story.qualityIndicators || {};
+
+    const updatedQuality = {
+      ...currentQuality,
+      [key]: !currentQuality[key],
+    };
+
+    try {
+      startGlobalLoading();
+
+      await updateUserStoryQuality(story._id, updatedQuality);
+      await initUserStories();  
+
+      toast.success("Quality updated!");
+    } 
+    catch (error) {
+      console.error(error);
+      toast.error("Failed to update quality");
+    } 
+    finally {
+      stopGlobalLoading();
+    }
+  };
+
   // ------------------------------------------------------
 
   useEffect(() => {
@@ -130,7 +156,11 @@ const UserStories = () => {
                       <span>{storyData.title}</span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-4 justify-self-end">
+                    <div className="flex items-center justify-center gap-3 justify-self-end">
+                      <QualityCheck
+                        quality={storyData.qualityIndicators}
+                        onToggle={(key) => toggleQuality(storyData, key)}
+                      />
 
                       <FaEye className="cursor-pointer" onClick={() => handleViewClick(storyData)} />
 
