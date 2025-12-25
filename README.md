@@ -3,6 +3,13 @@
 ## Overview
 This project consists of a **Node.js backend** and a **React frontend**, both located in their respective subdirectories.
 
+SleekBoard is a full-stack JavaScript web application built as a course project for SER 515 – Group 7. The app is structured as a Node.js backend plus a React frontend, with a MongoDB database configured via environment variables. 
+GitHub
+
+In plain terms: it’s a modern web app where the backend exposes APIs (likely for core app data) and the frontend is a single-page application that consumes those APIs.
+
+Because the README and public metadata don’t explain the business domain (e.g., “task board”, “notes app”, etc.), I can’t honestly say exactly what the app does from the code I’m allowed to see. I can, however, describe the architecture and tech stack quite clearly.
+
 ## Prerequisites
 Make sure you have the following installed:
 - [Node.js](https://nodejs.org/) (22.21.0 or higher)
